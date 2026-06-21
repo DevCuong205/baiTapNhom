@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - Task Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="logo">
+                <i class="fa-solid fa-clipboard-list"></i>
+            </div>
+            <div class="brand-text">
+                <h2>Task Manager</h2>
+                <p>Hệ thống quản lý công việc</p>
+            </div>
+        </div>
+
+        <div class="profile-card">
+            <img th:if="${session.user != null and session.user.avatar != null and !#strings.isEmpty(session.user.avatar)}"
+                 th:src="@{/avatars/{file}(file=${session.user.avatar})}"
+                 alt="Avatar"
+                 class="avatar">
+
+            <img th:unless="${session.user != null and session.user.avatar != null and !#strings.isEmpty(session.user.avatar)}"
+                 th:src="@{/avatars/default.png}"
+                 alt="Avatar"
+                 class="avatar">
+
+            <h3 th:text="${session.user.fullname}">User</h3>
+            <p>Xin chào, chúc bạn một ngày làm việc hiệu quả 👋</p>
+
+            <span class="role-badge" th:text="${session.user.role}">ADMIN</span>
+
+            <a href="/logout" class="logout-btn">
+                <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+            </a>
+        </div>
+
+        <div>
+            <div class="menu-title">Điều hướng</div>
+
+            <nav class="menu">
+                <a href="/" class="active">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="/tasks">
+                    <i class="fa-solid fa-list-check"></i>
+                    <span>Công việc</span>
+                </a>
+
+                <a th:if="${session.user.role == 'ADMIN'}" href="/users">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Người dùng</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+
+        <!-- TOPBAR -->
+        <div class="topbar">
+            <div class="welcome">
+                <h1>Dashboard Quản Lý Công Việc</h1>
+                <p>
+                    Xin chào <b th:text="${session.user.fullname}">User</b>,
+                    hôm nay bạn có <b th:text="${totalTasks}">0</b> công việc cần theo dõi.
+                </p>
+            </div>
+
+            <div class="topbar-right">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Tìm kiếm công việc, người dùng...">
+                </div>
+
+                <button class="icon-btn" type="button">
+                    <i class="fa-regular fa-bell"></i>
+                </button>
+
+                <a href="/tasks" class="add-task-btn">
+                    <i class="fa-solid fa-plus"></i> Xem công việc
+                </a>
+            </div>
+        </div>
+
+        <!-- OVERVIEW -->
+        <section class="overview-banner">
+            <div class="overview-left">
+                <h2>Tổng quan hệ thống</h2>
+                <p>
+                    Theo dõi tình trạng công việc, tiến độ xử lý và hoạt động người dùng
+                    trên cùng một giao diện trực quan, hiện đại và dễ sử dụng.
+                </p>
+
+                <div class="overview-tags">
+                    <span class="tag">
+                        <span th:text="${totalTasks}">0</span> Công việc
+                    </span>
+                    <span class="tag">
+                        <span th:text="${completedTasks}">0</span> Hoàn thành
+                    </span>
+                    <span class="tag">
+                        <span th:text="${doingTasks}">0</span> Đang làm
+                    </span>
+                    <span class="tag">
+                        <span th:text="${todoTasks}">0</span> Chưa làm
+                    </span>
+                </div>
+            </div>
+
+            <div class="overview-emoji">📊</div>
+        </section>
+
+        <!-- STATS -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon blue">
+                        <i class="fa-solid fa-clipboard-list"></i>
+                    </div>
+                </div>
+                <h4>Tổng công việc</h4>
+                <div class="stat-number text-blue" th:text="${totalTasks}">0</div>
+                <div class="stat-note">Tổng số task trong hệ thống</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon green">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                </div>
+                <h4>Hoàn thành</h4>
+                <div class="stat-number text-green" th:text="${completedTasks}">0</div>
+                <div class="stat-note">Các công việc đã hoàn tất</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon yellow">
+                        <i class="fa-solid fa-spinner"></i>
+                    </div>
+                </div>
+                <h4>Đang làm</h4>
+                <div class="stat-number text-yellow" th:text="${doingTasks}">0</div>
+                <div class="stat-note">Task đang trong quá trình xử lý</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon red">
+                        <i class="fa-solid fa-circle-xmark"></i>
+                    </div>
+                </div>
+                <h4>Chưa làm</h4>
+                <div class="stat-number text-red" th:text="${todoTasks}">0</div>
+                <div class="stat-note">Công việc chưa bắt đầu</div>
+            </div>
+        </section>
+
+        <!-- CONTENT GRID -->
+        <section class="content-grid">
+            <!-- USERS -->
+            <div class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h3>Tổng người dùng</h3>
+                        <p>Số lượng người dùng trong hệ thống</p>
+                    </div>
+                </div>
+
+                <div class="user-summary">
+                    <div class="user-summary-icon">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <div>
+                        <div class="user-summary-number" th:text="${totalUsers}">0</div>
+                        <div class="user-summary-text">Người dùng đang hoạt động trong hệ thống</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CHART -->
+            <div class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h3>Thống kê công việc</h3>
+                        <p>Biểu đồ trạng thái công việc hiện tại</p>
+                    </div>
+                </div>
+
+                <div class="chart-wrap">
+                    <canvas id="taskChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- QUICK INFO -->
+        <section class="bottom-grid">
+            <div class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h3>Tiến độ công việc</h3>
+                        <p>Tóm tắt nhanh trạng thái xử lý task</p>
+                    </div>
+                </div>
+
+                <div class="info-list">
+                    <div class="info-item">
+                        <div class="info-icon green">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                        <div class="info-content">
+                            <h4>Hoàn thành</h4>
+                            <p>
+                                Hiện có
+                                <b th:text="${completedTasks}">0</b>
+                                công việc đã hoàn tất.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon yellow">
+                            <i class="fa-solid fa-spinner"></i>
+                        </div>
+                        <div class="info-content">
+                            <h4>Đang làm</h4>
+                            <p>
+                                Hiện có
+                                <b th:text="${doingTasks}">0</b>
+                                công việc đang được xử lý.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon red">
+                            <i class="fa-solid fa-hourglass-start"></i>
+                        </div>
+                        <div class="info-content">
+                            <h4>Chưa làm</h4>
+                            <p>
+                                Hiện có
+                                <b th:text="${todoTasks}">0</b>
+                                công việc chưa bắt đầu.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h3>Truy cập nhanh</h3>
+                        <p>Đi đến các chức năng chính của hệ thống</p>
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+                    <a href="/tasks" class="quick-card">
+                        <div class="quick-icon blue">
+                            <i class="fa-solid fa-list-check"></i>
+                        </div>
+                        <div>
+                            <h4>Quản lý công việc</h4>
+                            <p>Xem, thêm, sửa, xoá công việc</p>
+                        </div>
+                    </a>
+
+                    <a th:if="${session.user.role == 'ADMIN'}" href="/users" class="quick-card">
+                        <div class="quick-icon purple">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                        <div>
+                            <h4>Quản lý người dùng</h4>
+                            <p>Thêm mới và phân quyền tài khoản</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<script th:inline="javascript">
+    const completed = [[${completedTasks}]];
+    const doing = [[${doingTasks}]];
+    const todo = [[${todoTasks}]];
+
+    const ctx = document.getElementById('taskChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Hoàn thành', 'Đang làm', 'Chưa làm'],
+                datasets: [{
+                    data: [completed, doing, todo],
+                    backgroundColor: ['#22c55e', '#f59e0b', '#ef4444'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

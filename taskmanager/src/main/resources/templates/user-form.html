@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${user.id == null ? 'Thêm người dùng' : 'Chỉnh sửa người dùng'}">Người dùng</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" th:href="@{/css/user-form.css}">
+</head>
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="logo">
+                <i class="fa-solid fa-clipboard-list"></i>
+            </div>
+            <div class="brand-text">
+                <h2>Task Manager</h2>
+                <p>Hệ thống quản lý công việc</p>
+            </div>
+        </div>
+
+        <div class="profile-card">
+            <img th:if="${session.user != null and session.user.avatar != null and !#strings.isEmpty(session.user.avatar)}"
+                 th:src="@{/avatars/{file}(file=${session.user.avatar})}"
+                 alt="Avatar"
+                 class="avatar">
+
+            <img th:unless="${session.user != null and session.user.avatar != null and !#strings.isEmpty(session.user.avatar)}"
+                 th:src="@{/avatars/default.png}"
+                 alt="Avatar"
+                 class="avatar">
+
+            <h3 th:text="${session.user.fullname}">User</h3>
+            <p>Xin chào, chúc bạn một ngày làm việc hiệu quả 👋</p>
+
+            <span class="role-badge" th:text="${session.user.role}">ADMIN</span>
+
+            <a href="/logout" class="logout-btn">
+                <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+            </a>
+        </div>
+
+        <div>
+            <div class="menu-title">Điều hướng</div>
+            <nav class="menu">
+                <a href="/">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="/tasks">
+                    <i class="fa-solid fa-list-check"></i>
+                    <span>Công việc</span>
+                </a>
+
+                <a href="/users" class="active" th:if="${session.user.role == 'ADMIN'}">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Người dùng</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+
+        <div class="page-header">
+            <div>
+                <h1 th:text="${user.id == null ? 'Thêm Người Dùng' : 'Chỉnh Sửa Người Dùng'}">
+                    Thêm Người Dùng
+                </h1>
+                <p>Nhập thông tin tài khoản người dùng trong hệ thống.</p>
+            </div>
+
+            <a href="/users" class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i> Quay lại
+            </a>
+        </div>
+
+        <section class="form-panel">
+            <div class="form-header">
+                <h2 th:text="${user.id == null ? 'Tạo tài khoản mới' : 'Cập nhật tài khoản'}">
+                    Tạo tài khoản mới
+                </h2>
+                <p>Điền đầy đủ thông tin bên dưới rồi nhấn lưu.</p>
+            </div>
+
+            <form th:action="@{/users/save}"
+                  th:object="${user}"
+                  method="post"
+                  enctype="multipart/form-data"
+                  class="user-form">
+
+                <input type="hidden" th:field="*{id}">
+                <input type="hidden" th:field="*{avatar}">
+
+                <div class="form-grid">
+
+                    <!-- Username -->
+                    <div class="form-group">
+                        <label>Tên đăng nhập</label>
+                        <div class="input-box">
+                            <i class="fa-solid fa-user"></i>
+                            <input type="text" th:field="*{username}" placeholder="Nhập tên đăng nhập..." required>
+                        </div>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="form-group">
+                        <label>Mật khẩu</label>
+                        <div class="input-box">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="text" th:field="*{password}" placeholder="Nhập mật khẩu..." required>
+                        </div>
+                    </div>
+
+                    <!-- Fullname -->
+                    <div class="form-group">
+                        <label>Họ và tên</label>
+                        <div class="input-box">
+                            <i class="fa-solid fa-id-card"></i>
+                            <input type="text" th:field="*{fullname}" placeholder="Nhập họ và tên..." required>
+                        </div>
+                    </div>
+
+                    <!-- Role -->
+                    <div class="form-group">
+                        <label>Vai trò</label>
+                        <div class="input-box">
+                            <i class="fa-solid fa-user-shield"></i>
+                            <select th:field="*{role}" required>
+                                <option value="">-- Chọn vai trò --</option>
+                                <option value="ADMIN">ADMIN</option>
+                                <option value="USER">USER</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Avatar upload -->
+                    <div class="form-group full-width">
+                        <label>Ảnh đại diện</label>
+
+                        <div class="avatar-upload-box">
+                            <div class="avatar-preview-wrapper">
+                                <!-- nếu user đã có avatar -->
+                                <img th:if="${user.avatar != null and !#strings.isEmpty(user.avatar)}"
+                                     th:src="@{/avatars/{file}(file=${user.avatar})}"
+                                     alt="Avatar"
+                                     class="avatar-preview">
+
+                                <!-- nếu chưa có avatar -->
+                                <img th:if="${user.avatar == null or #strings.isEmpty(user.avatar)}"
+                                     th:src="@{/avatars/default.jpg}"
+                                     alt="Avatar"
+                                     class="avatar-preview">
+                            </div>
+
+                            <div class="upload-info">
+                                <label for="avatarFile" class="upload-btn">
+                                    <i class="fa-solid fa-upload"></i>
+                                    Chọn ảnh avatar
+                                </label>
+
+                                <input type="file"
+                                       id="avatarFile"
+                                       name="avatarFile"
+                                       accept="image/*"
+                                       hidden>
+
+                                <p class="upload-note">
+                                    Chấp nhận ảnh JPG, PNG, JPEG. Nếu không chọn ảnh mới khi sửa,
+                                    hệ thống sẽ giữ avatar cũ.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="form-actions">
+                    <a href="/users" class="cancel-btn">Huỷ</a>
+
+                    <button type="submit" class="save-btn">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span th:text="${user.id == null ? 'Lưu người dùng' : 'Cập nhật người dùng'}">
+                            Lưu người dùng
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </section>
+    </main>
+</div>
+
+</body>
+</html>

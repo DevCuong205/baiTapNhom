@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý công việc - Task Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" th:href="@{/css/tasks.css}">
+</head>
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="logo">
+                <i class="fa-solid fa-clipboard-list"></i>
+            </div>
+            <div class="brand-text">
+                <h2>Task Manager</h2>
+                <p>Hệ thống quản lý công việc</p>
+            </div>
+        </div>
+
+        <div class="profile-card">
+            <img th:if="${session.user != null and session.user.avatar != null and !#strings.isEmpty(session.user.avatar)}"
+                 th:src="@{/avatars/{file}(file=${session.user.avatar})}"
+                 alt="Avatar"
+                 class="avatar">
+
+            <img th:unless="${session.user != null and session.user.avatar != null and !#strings.isEmpty(session.user.avatar)}"
+                 th:src="@{/avatars/default.jpg}"
+                 alt="Avatar"
+                 class="avatar">
+
+            <h3 th:text="${session.user.fullname}">User</h3>
+            <p>Xin chào, chúc bạn một ngày làm việc hiệu quả 👋</p>
+
+            <span class="role-badge" th:text="${session.user.role}">ADMIN</span>
+
+            <a href="/logout" class="logout-btn">
+                <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+            </a>
+        </div>
+
+        <div>
+            <div class="menu-title">Điều hướng</div>
+            <nav class="menu">
+                <a href="/">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="/tasks" class="active">
+                    <i class="fa-solid fa-list-check"></i>
+                    <span>Công việc</span>
+                </a>
+
+                <a th:if="${session.user.role == 'ADMIN'}" href="/users">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Người dùng</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+        <!-- TOPBAR -->
+        <div class="topbar">
+            <div class="welcome">
+                <h1>Danh Sách Công Việc</h1>
+                <p>Quản lý, theo dõi và cập nhật toàn bộ công việc trong hệ thống.</p>
+            </div>
+
+            <div class="topbar-right">
+                <!-- FORM SEARCH -->
+                <form action="/tasks/search" method="get" class="search-form">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" name="keyword" placeholder="Tìm theo tên công việc...">
+                    </div>
+                </form>
+
+                <a href="/tasks/new" class="add-task-btn">
+                    <i class="fa-solid fa-plus"></i> Thêm công việc
+                </a>
+            </div>
+        </div>
+
+        <!-- OVERVIEW -->
+        <section class="overview-banner">
+            <div class="overview-left">
+                <h2>Quản lý công việc</h2>
+                <p>
+                    Theo dõi danh sách task, người thực hiện, trạng thái và thao tác chỉnh sửa
+                    trên một giao diện trực quan, dễ nhìn và đồng bộ với dashboard.
+                </p>
+            </div>
+            <div class="overview-emoji">📝</div>
+        </section>
+
+        <!-- PANEL TABLE -->
+        <section class="panel">
+            <div class="panel-header">
+                <div>
+                    <h3>Danh sách công việc</h3>
+                    <p>
+                        Tổng số công việc:
+                        <b th:text="${totalTasks}">0</b>
+                    </p>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="task-table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên công việc</th>
+                        <th>Mô tả</th>
+                        <th>Người thực hiện</th>
+                        <th>Trạng thái</th>
+                        <th class="text-center">Thao tác</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:each="task : ${tasks}">
+                        <td th:text="${task.id}">1</td>
+
+                        <td class="task-title" th:text="${task.title}">
+                            Thiết kế dashboard
+                        </td>
+
+                        <td th:text="${task.description}">
+                            Mô tả công việc
+                        </td>
+
+                        <td th:text="${task.user != null ? task.user.fullname : 'Chưa gán'}">
+                            User
+                        </td>
+
+                        <td>
+                            <span class="status-badge done"
+                                  th:if="${task.status == 'Hoàn thành'}">
+                                  Hoàn thành
+                            </span>
+
+                            <span class="status-badge doing"
+                                  th:if="${task.status == 'Đang làm'}">
+                                  Đang làm
+                            </span>
+
+                            <span class="status-badge todo"
+                                  th:if="${task.status == 'Chưa làm'}">
+                                  Chưa làm
+                            </span>
+                        </td>
+
+                        <td>
+                            <div class="action-group">
+                                <a th:href="@{'/tasks/edit/' + ${task.id}}" class="action-btn edit-btn">
+                                    <i class="fa-solid fa-pen"></i> Sửa
+                                </a>
+
+                                <a th:href="@{'/tasks/delete/' + ${task.id}}"
+                                   class="action-btn delete-btn"
+                                   onclick="return confirm('Bạn có chắc muốn xoá công việc này?')">
+                                    <i class="fa-solid fa-trash"></i> Xoá
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr th:if="${#lists.isEmpty(tasks)}">
+                        <td colspan="6" class="empty-cell">
+                            Chưa có công việc nào trong hệ thống.
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${task.id == null ? 'Thêm công việc' : 'Sửa công việc'}">Công việc</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/task-form.css">
+</head>
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="logo">
+                <i class="fa-solid fa-clipboard-list"></i>
+            </div>
+            <div class="brand-text">
+                <h2>Task Manager</h2>
+                <p>Hệ thống quản lý công việc</p>
+            </div>
+        </div>
+
+        <div class="profile-card">
+            <img th:if="${session.user != null and session.user.avatar != null and !#strings.isEmpty(session.user.avatar)}"
+                 th:src="@{/avatars/{file}(file=${session.user.avatar})}"
+                 alt="Avatar"
+                 class="avatar">
+
+            <img th:unless="${session.user != null and session.user.avatar != null and !#strings.isEmpty(session.user.avatar)}"
+                 th:src="@{/avatars/default.jpg}"
+                 alt="Avatar"
+                 class="avatar">
+
+            <h3 th:text="${session.user.fullname}">User</h3>
+            <p>Xin chào, chúc bạn một ngày làm việc hiệu quả 👋</p>
+
+            <span class="role-badge" th:text="${session.user.role}">ADMIN</span>
+
+            <a href="/logout" class="logout-btn">
+                <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+            </a>
+        </div>
+
+        <div>
+            <div class="menu-title">Điều hướng</div>
+            <nav class="menu">
+                <a href="/">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="/tasks" class="active">
+                    <i class="fa-solid fa-list-check"></i>
+                    <span>Công việc</span>
+                </a>
+
+                <a th:if="${session.user.role == 'ADMIN'}" href="/users">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Người dùng</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+
+        <div class="page-header">
+            <div>
+                <h1 th:text="${task.id == null ? 'Thêm Công Việc' : 'Chỉnh Sửa Công Việc'}">
+                    Thêm Công Việc
+                </h1>
+                <p>Nhập thông tin công việc trong hệ thống.</p>
+            </div>
+
+            <a href="/tasks" class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i> Quay lại
+            </a>
+        </div>
+
+        <section class="form-panel">
+            <div class="form-header">
+                <h2 th:text="${task.id == null ? 'Tạo công việc mới' : 'Cập nhật công việc'}">
+                    Tạo công việc mới
+                </h2>
+                <p>Điền đầy đủ thông tin bên dưới rồi nhấn lưu.</p>
+            </div>
+
+            <form th:action="@{/tasks/save}" th:object="${task}" method="post" class="task-form">
+                <input type="hidden" th:field="*{id}">
+
+                <div class="form-grid">
+
+                    <!-- Tên công việc -->
+                    <div class="form-group">
+                        <label>Tên công việc</label>
+                        <div class="input-box">
+                            <i class="fa-solid fa-list-check"></i>
+                            <input type="text" th:field="*{title}" placeholder="Nhập tên công việc..." required>
+                        </div>
+                    </div>
+
+                    <!-- Trạng thái -->
+                    <div class="form-group">
+                        <label>Trạng thái</label>
+                        <div class="input-box">
+                            <i class="fa-solid fa-signal"></i>
+                            <select th:field="*{status}" required>
+                                <option value="">-- Chọn trạng thái --</option>
+                                <option value="Chưa làm">Chưa làm</option>
+                                <option value="Đang làm">Đang làm</option>
+                                <option value="Hoàn thành">Hoàn thành</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Deadline -->
+                    <div class="form-group">
+                        <label>Hạn chót</label>
+                        <div class="input-box">
+                            <i class="fa-solid fa-calendar-days"></i>
+                            <input type="date" th:field="*{deadline}">
+                        </div>
+                    </div>
+
+                    <!-- Người thực hiện -->
+                    <div class="form-group">
+                        <label>Người thực hiện</label>
+                        <div class="input-box">
+                            <i class="fa-solid fa-user"></i>
+                            <select name="userId">
+                                <option value="">-- Chọn người thực hiện --</option>
+                                <option th:each="u : ${users}"
+                                        th:value="${u.id}"
+                                        th:text="${u.fullname + ' (' + u.username + ')'}"
+                                        th:selected="${task.user != null && task.user.id == u.id}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Mô tả -->
+                    <div class="form-group full-width">
+                        <label>Mô tả công việc</label>
+                        <div class="textarea-box">
+                            <i class="fa-solid fa-align-left"></i>
+                            <textarea th:field="*{description}" rows="5"
+                                      placeholder="Nhập mô tả công việc..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a href="/tasks" class="cancel-btn">Huỷ</a>
+                    <button type="submit" class="save-btn">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span th:text="${task.id == null ? 'Lưu công việc' : 'Cập nhật công việc'}">Lưu công việc</span>
+                    </button>
+                </div>
+            </form>
+        </section>
+    </main>
+</div>
+
+</body>
+</html>
