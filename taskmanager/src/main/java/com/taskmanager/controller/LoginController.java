@@ -14,20 +14,31 @@ public class LoginController {
     @Autowired
     private UserRepository userRepository;
 
+    // Hiển thị trang đăng nhập
     @GetMapping("/login")
-    public String showLoginForm() {
+    public String showLoginForm(HttpSession session) {
+
+        // Nếu đã đăng nhập thì chuyển về Dashboard
+        if (session.getAttribute("user") != null) {
+            return "redirect:/";
+        }
+
         return "login";
     }
 
+    // Xử lý đăng nhập
     @PostMapping("/login")
-    public String login(@RequestParam("username") String username,
-                        @RequestParam("password") String password,
+    public String login(@RequestParam String username,
+                        @RequestParam String password,
                         HttpSession session,
                         Model model) {
 
         User user = userRepository.findByUsername(username);
 
-        if (user != null && user.getPassword() != null && user.getPassword().equals(password)) {
+        if (user != null
+                && user.getPassword() != null
+                && user.getPassword().equals(password)) {
+
             session.setAttribute("user", user);
             return "redirect:/";
         }
@@ -36,9 +47,13 @@ public class LoginController {
         return "login";
     }
 
+    // Đăng xuất
     @GetMapping("/logout")
     public String logout(HttpSession session) {
+
         session.invalidate();
+
         return "redirect:/login";
     }
+
 }

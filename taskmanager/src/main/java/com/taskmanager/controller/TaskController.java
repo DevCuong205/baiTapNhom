@@ -4,6 +4,7 @@ import com.taskmanager.entity.Task;
 import com.taskmanager.entity.User;
 import com.taskmanager.repository.TaskRepository;
 import com.taskmanager.repository.UserRepository;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,7 +20,11 @@ public class TaskController {
     private UserRepository userRepository;
 
     @GetMapping("/tasks")
-    public String listTasks(Model model) {
+    public String listTasks(Model model, HttpSession session) {
+
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
 
         model.addAttribute("tasks", taskRepository.findAll());
         model.addAttribute("totalTasks", taskRepository.count());
@@ -59,7 +64,7 @@ public class TaskController {
     @GetMapping("/tasks/edit/{id}")
     public String editTask(@PathVariable Long id, Model model) {
 
-        Task task = taskRepository.findById(id).orElse(new Task());
+        Task task = taskRepository.findById(id).orElseThrow();
 
         model.addAttribute("task", task);
         model.addAttribute("users", userRepository.findAll());
@@ -76,18 +81,19 @@ public class TaskController {
     }
 
     @GetMapping("/tasks/search")
-    public String searchTask(@RequestParam("keyword") String keyword,
-                             Model model) {
+    public String searchTask(@RequestParam String keyword,
+                             Model model,
+                             HttpSession session) {
 
-        model.addAttribute(
-                "tasks",
-                taskRepository.findByTitleContainingIgnoreCase(keyword)
-        );
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
 
-        model.addAttribute(
-                "totalTasks",
-                taskRepository.findByTitleContainingIgnoreCase(keyword).size()
-        );
+        model.addAttribute("tasks",
+                taskRepository.findByTitleContainingIgnoreCase(keyword));
+
+        model.addAttribute("totalTasks",
+                taskRepository.findByTitleContainingIgnoreCase(keyword).size());
 
         return "tasks";
     }

@@ -19,21 +19,20 @@ public class HomeController {
     @GetMapping("/")
     public String home(Model model) {
 
-        model.addAttribute("totalTasks",
-                taskRepository.count());
+        long totalTasks = taskRepository.count();
+        long totalUsers = userRepository.count();
 
-        model.addAttribute("totalUsers",
-                userRepository.count());
+        long completedTasks = taskRepository.countByStatus("Hoàn thành");
+        long doingTasks = taskRepository.countByStatus("Đang làm");
+        long todoTasks = taskRepository.countByStatus("Chưa làm");
 
-        model.addAttribute("completedTasks",
-                taskRepository.countByStatus("Hoàn thành"));
-
-        model.addAttribute("doingTasks",
-                taskRepository.countByStatus("Đang làm"));
-
-        model.addAttribute("todoTasks",
-                taskRepository.countByStatus("Chưa làm"));
+        model.addAttribute("totalTasks", totalTasks);
+        model.addAttribute("totalUsers", totalUsers);
+        model.addAttribute("completedTasks", completedTasks);
+        model.addAttribute("doingTasks", doingTasks);
+        model.addAttribute("todoTasks", todoTasks);
 
         return "index";
     }
+
 }
