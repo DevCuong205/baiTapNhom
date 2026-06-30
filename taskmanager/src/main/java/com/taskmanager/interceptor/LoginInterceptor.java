@@ -1,5 +1,6 @@
 package com.taskmanager.interceptor;
 
+import com.taskmanager.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -12,16 +13,23 @@ public class LoginInterceptor implements HandlerInterceptor {
                              HttpServletResponse response,
                              Object handler) throws Exception {
 
-        HttpSession session = request.getSession(false);
+        User user = (User) request.getSession().getAttribute("user");
 
-        // Nếu chưa đăng nhập
-        if (session == null || session.getAttribute("user") == null) {
-
+        if (user == null) {
             response.sendRedirect("/login");
             return false;
         }
 
-        // Đã đăng nhập
+        String uri = request.getRequestURI();
+
+        // Chỉ ADMIN được quản lý người dùng
+        if (uri.startsWith("/users")
+                && !"ADMIN".equals(user.getRole())) {
+
+            response.sendRedirect("/");
+            return false;
+        }
+
         return true;
     }
 }

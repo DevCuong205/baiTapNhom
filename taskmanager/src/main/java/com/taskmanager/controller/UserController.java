@@ -17,15 +17,30 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
+    private boolean isAdmin(HttpSession session) {
+        User loginUser = (User) session.getAttribute("user");
+        return loginUser != null && "ADMIN".equals(loginUser.getRole());
+    }
+
     @GetMapping("/users")
-    public String listUsers(Model model) {
+    public String listUsers(Model model, HttpSession session) {
+
+        if (!isAdmin(session)) {
+            return "redirect:/";
+        }
+
         model.addAttribute("users", userRepository.findAll());
         model.addAttribute("totalUsers", userRepository.count());
+
         return "users";
     }
 
     @GetMapping("/users/new")
-    public String showForm(Model model) {
+    public String showForm(Model model, HttpSession session) {
+
+        if (!isAdmin(session)) {
+            return "redirect:/";
+        }
 
         User user = new User();
         user.setAvatar("default.jpg");
@@ -40,11 +55,13 @@ public class UserController {
                            @RequestParam(value = "avatarFile", required = false) MultipartFile avatarFile,
                            HttpSession session) {
 
+        if (!isAdmin(session)) {
+            return "redirect:/";
+        }
+
         try {
 
-            String uploadDir =
-                    System.getProperty("user.dir")
-                            + "/uploads/avatars/";
+            String uploadDir = System.getProperty("user.dir") + "/uploads/avatars/";
 
             File dir = new File(uploadDir);
 
@@ -52,7 +69,6 @@ public class UserController {
                 dir.mkdirs();
             }
 
-            // Có upload ảnh mới
             if (avatarFile != null && !avatarFile.isEmpty()) {
 
                 String originalFilename = avatarFile.getOriginalFilename();
@@ -60,30 +76,20 @@ public class UserController {
                 String extension = "";
 
                 if (originalFilename != null && originalFilename.contains(".")) {
-                    extension = originalFilename.substring(
-                            originalFilename.lastIndexOf(".")
-                    );
+                    extension = originalFilename.substring(originalFilename.lastIndexOf("."));
                 }
 
-                String fileName =
-                        user.getUsername()
-                                + "_"
-                                + System.currentTimeMillis()
-                                + extension;
+                String fileName = user.getUsername() + "_" + System.currentTimeMillis() + extension;
 
-                // Xóa avatar cũ nếu đang sửa user
                 if (user.getId() != null) {
 
-                    User oldUser =
-                            userRepository.findById(user.getId())
-                                    .orElse(null);
+                    User oldUser = userRepository.findById(user.getId()).orElse(null);
 
-                    if (oldUser != null
-                            && oldUser.getAvatar() != null
-                            && !oldUser.getAvatar().equals("default.jpg")) {
+                    if (oldUser != null &&
+                            oldUser.getAvatar() != null &&
+                            !oldUser.getAvatar().equals("default.jpg")) {
 
-                        File oldFile =
-                                new File(uploadDir + oldUser.getAvatar());
+                        File oldFile = new File(uploadDir + oldUser.getAvatar());
 
                         if (oldFile.exists()) {
                             oldFile.delete();
@@ -99,12 +105,9 @@ public class UserController {
 
             } else {
 
-                // Không upload ảnh mới
                 if (user.getId() != null) {
 
-                    User oldUser =
-                            userRepository.findById(user.getId())
-                                    .orElse(null);
+                    User oldUser = userRepository.findById(user.getId()).orElse(null);
 
                     if (oldUser != null) {
                         user.setAvatar(oldUser.getAvatar());
@@ -118,11 +121,10 @@ public class UserController {
 
             User savedUser = userRepository.save(user);
 
-            // cập nhật session nếu user đang đăng nhập sửa chính mình
             User sessionUser = (User) session.getAttribute("user");
 
-            if (sessionUser != null
-                    && sessionUser.getId().equals(savedUser.getId())) {
+            if (sessionUser != null &&
+                    sessionUser.getId().equals(savedUser.getId())) {
 
                 session.setAttribute("user", savedUser);
             }
@@ -136,16 +138,20 @@ public class UserController {
 
     @GetMapping("/users/edit/{id}")
     public String editUser(@PathVariable Long id,
-                           Model model) {
+                           Model model,
+                           HttpSession session) {
 
-        User user =
-                userRepository.findById(id)
-                        .orElse(null);
+        if (!isAdmin(session)) {
+            return "redirect:/";
+        }
 
-        if (user != null &&
-                (user.getAvatar() == null
-                        || user.getAvatar().isEmpty())) {
+        User user = userRepository.findById(id).orElse(null);
 
+        if (user == null) {
+            return "redirect:/users";
+        }
+
+        if (user.getAvatar() == null || user.getAvatar().isEmpty()) {
             user.setAvatar("default.jpg");
         }
 
@@ -155,30 +161,58 @@ public class UserController {
     }
 
     @GetMapping("/users/delete/{id}")
-    public String deleteUser(@PathVariable Long id) {
+    public String deleteUser(@PathVariable Long id,
+                             HttpSession session) {
 
-        User user =
-                userRepository.findById(id)
-                        .orElse(null);
+        if (!isAdmin(session)) {
+            return "redirect:/";
+        }
 
-        if (user != null
-                && user.getAvatar() != null
-                && !user.getAvatar().equals("default.jpg")) {
+        User user = userRepository.findById(id).orElse(null);
 
-            String uploadDir =
-                    System.getProperty("user.dir")
-                            + "/uploads/avatars/";
+        if (user == null) {
+            return "redirect:/users";
+        }
 
-            File avatarFile =
-                    new File(uploadDir + user.getAvatar());
+        // Không cho phép xóa chính mình
+        User loginUser = (User) session.getAttribute("user");
+
+        if (loginUser.getId().equals(user.getId())) {
+            return "redirect:/users";
+        }
+
+        if (user.getAvatar() != null &&
+                !user.getAvatar().equals("default.jpg")) {
+
+            String uploadDir = System.getProperty("user.dir") + "/uploads/avatars/";
+
+            File avatarFile = new File(uploadDir + user.getAvatar());
 
             if (avatarFile.exists()) {
                 avatarFile.delete();
             }
         }
 
-        userRepository.deleteById(id);
+        userRepository.delete(user);
 
         return "redirect:/users";
+    }
+
+    @GetMapping("/users/search")
+    public String searchUser(@RequestParam String keyword,
+                             Model model,
+                             HttpSession session) {
+
+        if (!isAdmin(session)) {
+            return "redirect:/";
+        }
+
+        model.addAttribute("users",
+                userRepository.findByFullnameContainingIgnoreCaseOrUsernameContainingIgnoreCase(keyword, keyword));
+
+        model.addAttribute("totalUsers",
+                userRepository.findByFullnameContainingIgnoreCaseOrUsernameContainingIgnoreCase(keyword, keyword).size());
+
+        return "users";
     }
 }
