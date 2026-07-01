@@ -115,7 +115,7 @@ public class UserController {
 
                 } else {
 
-                    user.setAvatar("default.jpg");
+                    user.setAvatar("default.png");
                 }
             }
 
@@ -207,11 +207,13 @@ public class UserController {
             return "redirect:/";
         }
 
-        model.addAttribute("users",
-                userRepository.findByFullnameContainingIgnoreCaseOrUsernameContainingIgnoreCase(keyword, keyword));
-
-        model.addAttribute("totalUsers",
-                userRepository.findByFullnameContainingIgnoreCaseOrUsernameContainingIgnoreCase(keyword, keyword).size());
+        java.util.List<User> results =
+                userRepository.findByFullnameContainingIgnoreCaseOrUsernameContainingIgnoreCase(keyword, keyword);
+ 
+        model.addAttribute("users", results);
+        model.addAttribute("totalUsers", results.size());
+        model.addAttribute("keyword", keyword);
+ 
 
         return "users";
     }

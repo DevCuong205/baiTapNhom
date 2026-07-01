@@ -174,6 +174,7 @@ public class TaskController {
 
         model.addAttribute("tasks", tasks);
         model.addAttribute("totalTasks", tasks.size());
+        model.addAttribute("keyword", keyword);
 
         return "tasks";
     }
