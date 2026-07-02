@@ -4,6 +4,7 @@ import com.taskmanager.entity.User;
 import com.taskmanager.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,9 @@ import java.io.File;
 
 @Controller
 public class UserController {
+
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
     private UserRepository userRepository;
@@ -116,6 +120,24 @@ public class UserController {
                 } else {
 
                     user.setAvatar("default.png");
+                }
+            }
+
+            if (user.getId() == null) {
+
+                user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+            } else {
+
+                User oldUser = userRepository.findById(user.getId()).orElse(null);
+
+                if (oldUser != null) {
+
+                    if (!user.getPassword().equals(oldUser.getPassword())) {
+
+                        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+                    }
                 }
             }
 
