@@ -3,6 +3,7 @@ package com.taskmanager.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -14,17 +15,23 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Column(nullable = false, unique = true, length = 50)
     private String username;
 
+    @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false, length = 100)
     private String fullname;
 
+    @Column(nullable = false)
     private String role;
 
-    private String avatar;
+    @Column(nullable = false)
+    private String avatar = "default.png";
 
-    @OneToMany(mappedBy = "user")
-    private List<Task> tasks;
+    @OneToMany(mappedBy = "user",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY)
+    private List<Task> tasks = new ArrayList<>();
 }

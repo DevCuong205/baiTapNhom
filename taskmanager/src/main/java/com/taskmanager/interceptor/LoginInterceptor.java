@@ -3,7 +3,6 @@ package com.taskmanager.interceptor;
 import com.taskmanager.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 public class LoginInterceptor implements HandlerInterceptor {
@@ -15,6 +14,7 @@ public class LoginInterceptor implements HandlerInterceptor {
 
         User user = (User) request.getSession().getAttribute("user");
 
+        // Chưa đăng nhập
         if (user == null) {
             response.sendRedirect("/login");
             return false;
@@ -22,9 +22,9 @@ public class LoginInterceptor implements HandlerInterceptor {
 
         String uri = request.getRequestURI();
 
-        // Chỉ ADMIN được quản lý người dùng
+        // Chỉ ADMIN mới được truy cập /users
         if (uri.startsWith("/users")
-                && !"ADMIN".equals(user.getRole())) {
+                && !"ADMIN".equalsIgnoreCase(user.getRole())) {
 
             response.sendRedirect("/");
             return false;

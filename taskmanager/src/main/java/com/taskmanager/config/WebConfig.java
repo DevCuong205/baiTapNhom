@@ -13,17 +13,19 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
 
         registry.addInterceptor(new LoginInterceptor())
-                .addPathPatterns(
-                        "/",
-                        "/tasks/**",
-                        "/users/**"
-                )
+                .addPathPatterns("/**")
                 .excludePathPatterns(
                         "/login",
                         "/logout",
+
                         "/css/**",
                         "/js/**",
-                        "/avatars/**"
+                        "/images/**",
+                        "/avatars/**",
+
+                        "/favicon.ico",
+                        "/error",
+                        "/webjars/**"
                 );
     }
 
