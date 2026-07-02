@@ -126,6 +126,18 @@
                         </div>
                     </div>
 
+                    <div class="form-group">
+                        <label>Mức độ ưu tiên</label>
+                        <div class="input-box">
+                            <i class="fa-solid fa-flag"></i>
+                            <select th:field="*{priority}">
+                                <option value="LOW">🟢 Thấp</option>
+                                <option value="MEDIUM">🟡 Trung bình</option>
+                                <option value="HIGH">🔴 Cao</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <!-- Deadline -->
                     <div class="form-group">
                         <label>Hạn chót</label>
@@ -133,6 +145,18 @@
                             <i class="fa-solid fa-calendar-days"></i>
                             <input type="date" th:field="*{deadline}">
                         </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tiến độ (<span id="progressValue"
+                                              th:text="${task.progress != null ? task.progress : 0}">0</span>%)</label>
+
+                        <input type="range"
+                               min="0"
+                               max="100"
+                               step="10"
+                               th:field="*{progress}"
+                               oninput="progressValue.innerText=this.value">
                     </div>
 
                     <!-- Người thực hiện -->
@@ -173,6 +197,37 @@
         </section>
     </main>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
 
+        const progress = document.querySelector("input[name='progress']");
+        const status = document.querySelector("select[name='status']");
+        const progressValue = document.getElementById("progressValue");
+
+        if (progress) {
+
+            // Hiển thị giá trị ban đầu
+            if (progressValue) {
+                progressValue.textContent = progress.value;
+            }
+
+            progress.addEventListener("input", function () {
+
+                if (progressValue) {
+                    progressValue.textContent = this.value;
+                }
+
+                if (status) {
+                    if (this.value == 100) {
+                        status.value = "Hoàn thành";
+                    } else if (this.value > 0 && status.value === "Chưa làm") {
+                        status.value = "Đang làm";
+                    }
+                }
+            });
+        }
+
+    });
+</script>
 </body>
 </html>

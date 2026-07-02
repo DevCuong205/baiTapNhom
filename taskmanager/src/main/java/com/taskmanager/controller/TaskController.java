@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -73,8 +74,27 @@ public class TaskController {
         if (userId != null) {
             User user = userRepository.findById(userId).orElse(null);
             task.setUser(user);
-        } else {
-            task.setUser(null);
+        }
+
+        // Nếu tạo mới
+        if (task.getId() == null) {
+            task.setCreatedAt(LocalDateTime.now());
+
+            if (task.getProgress() == null) {
+                task.setProgress(0);
+            }
+
+            if (task.getPriority() == null || task.getPriority().isBlank()) {
+                task.setPriority("MEDIUM");
+            }
+        }
+
+        // Luôn cập nhật thời gian sửa
+        task.setUpdatedAt(LocalDateTime.now());
+
+        // Nếu progress = 100 thì tự chuyển trạng thái
+        if (task.getProgress() != null && task.getProgress() == 100) {
+            task.setStatus("COMPLETED");
         }
 
         taskRepository.save(task);
