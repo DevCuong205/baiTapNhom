@@ -131,16 +131,21 @@
                         <th>Mô tả</th>
                         <th>Người thực hiện</th>
                         <th>Trạng thái</th>
+                        <th>Ưu tiên</th>
+                        <th>Tiến độ</th>
+                        <th>Deadline</th>
                         <th class="text-center">Thao tác</th>
                     </tr>
                     </thead>
 
                     <tbody>
+
                     <tr th:each="task : ${tasks}">
+
                         <td th:text="${task.id}">1</td>
 
                         <td class="task-title" th:text="${task.title}">
-                            Thiết kế dashboard
+                            Thiết kế Dashboard
                         </td>
 
                         <td th:text="${task.description}">
@@ -151,42 +156,109 @@
                             User
                         </td>
 
+                        <!-- Trạng thái -->
                         <td>
-                            <span class="status-badge done"
-                                  th:if="${task.status == 'Hoàn thành'}">
-                                  Hoàn thành
-                            </span>
+
+        <span class="status-badge done"
+              th:if="${task.status == 'Hoàn thành'}">
+            Hoàn thành
+        </span>
 
                             <span class="status-badge doing"
                                   th:if="${task.status == 'Đang làm'}">
-                                  Đang làm
-                            </span>
+            Đang làm
+        </span>
 
                             <span class="status-badge todo"
                                   th:if="${task.status == 'Chưa làm'}">
-                                  Chưa làm
-                            </span>
+            Chưa làm
+        </span>
+
                         </td>
 
+                        <!-- Priority -->
                         <td>
+
+        <span class="priority priority-high"
+              th:if="${task.priority=='HIGH'}">
+            🔴 Cao
+        </span>
+
+                            <span class="priority priority-medium"
+                                  th:if="${task.priority=='MEDIUM'}">
+            🟡 Trung bình
+        </span>
+
+                            <span class="priority priority-low"
+                                  th:if="${task.priority=='LOW'}">
+            🟢 Thấp
+        </span>
+
+                        </td>
+
+                        <!-- Progress -->
+                        <td>
+
+                            <div class="progress">
+
+                                <div class="progress-bar"
+                                     th:style="'width:' + ${task.progress} + '%'">
+                                </div>
+
+                            </div>
+
+                            <small th:text="${task.progress + '%'}">0%</small>
+
+                        </td>
+
+                        <!-- Deadline -->
+                        <td>
+
+        <span th:if="${task.deadline != null}"
+              th:text="${#temporals.format(task.deadline,'dd/MM/yyyy')}">
+        </span>
+
+                            <span th:if="${task.deadline == null}">
+            --
+        </span>
+
+                        </td>
+
+                        <!-- Thao tác -->
+                        <td>
+
                             <div class="action-group">
-                                <a th:href="@{'/tasks/edit/' + ${task.id}}" class="action-btn edit-btn">
-                                    <i class="fa-solid fa-pen"></i> Sửa
+
+                                <a th:href="@{'/tasks/edit/' + ${task.id}}"
+                                   class="action-btn edit-btn">
+
+                                    <i class="fa-solid fa-pen"></i>
+                                    Sửa
+
                                 </a>
 
-                                <a th:href="@{'/tasks/delete/' + ${task.id}}"
-                                   class="action-btn delete-btn"
-                                   onclick="return confirm('Bạn có chắc muốn xoá công việc này?')">
-                                    <i class="fa-solid fa-trash"></i> Xoá
-                                </a>
+                                <form th:action="@{'/tasks/delete/' + ${task.id}}" method="post"
+                                      onsubmit="return confirm('Bạn có chắc muốn xoá?')">
+
+                                    <button class="action-btn delete-btn">
+                                        <i class="fa-solid fa-trash"></i>
+                                        Xóa
+                                    </button>
+
+                                </form>
+
                             </div>
+
                         </td>
+
                     </tr>
 
                     <tr th:if="${#lists.isEmpty(tasks)}">
-                        <td colspan="6" class="empty-cell">
+
+                        <td colspan="9" class="empty-cell">
                             Chưa có công việc nào trong hệ thống.
                         </td>
+
                     </tr>
                     </tbody>
                 </table>

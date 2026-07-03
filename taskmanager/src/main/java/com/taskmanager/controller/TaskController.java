@@ -76,7 +76,7 @@ public class TaskController {
             task.setUser(user);
         }
 
-        // Nếu tạo mới
+        // Tạo mới
         if (task.getId() == null) {
             task.setCreatedAt(LocalDateTime.now());
 
@@ -89,13 +89,20 @@ public class TaskController {
             }
         }
 
-        // Luôn cập nhật thời gian sửa
-        task.setUpdatedAt(LocalDateTime.now());
+        // Tự cập nhật trạng thái theo progress
+        if (task.getProgress() != null) {
 
-        // Nếu progress = 100 thì tự chuyển trạng thái
-        if (task.getProgress() != null && task.getProgress() == 100) {
-            task.setStatus("COMPLETED");
+            if (task.getProgress() == 0) {
+                task.setStatus("Chưa làm");
+            } else if (task.getProgress() == 100) {
+                task.setStatus("Hoàn thành");
+            } else {
+                task.setStatus("Đang làm");
+            }
+
         }
+
+        task.setUpdatedAt(LocalDateTime.now());
 
         taskRepository.save(task);
 
