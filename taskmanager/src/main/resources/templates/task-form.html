@@ -98,8 +98,8 @@
                 <p>Điền đầy đủ thông tin bên dưới rồi nhấn lưu.</p>
             </div>
 
-            <form th:action="@{/tasks/save}" th:object="${task}" method="post" class="task-form">
-                <input type="hidden" th:field="*{id}">
+            <form th:action="@{/tasks/save}" th:object="${task}" method="post" class="task-form" id="taskForm">
+                <input type="hidden" th:field="*{id}" id="taskIdField">
 
                 <div class="form-grid">
 
@@ -128,9 +128,9 @@
 
                     <div class="form-group">
                         <label>Mức độ ưu tiên</label>
-                        <div class="input-box">
+                        <div class="input-box" id="priorityBox">
                             <i class="fa-solid fa-flag"></i>
-                            <select th:field="*{priority}" required>
+                            <select th:field="*{priority}" id="prioritySelect" required>
                                 <option value="">-- Chọn mức ưu tiên --</option>
                                 <option value="LOW">🟢 Thấp</option>
                                 <option value="MEDIUM">🟡 Trung bình</option>
@@ -144,7 +144,7 @@
                         <label>Hạn chót</label>
                         <div class="input-box">
                             <i class="fa-solid fa-calendar-days"></i>
-                            <input type="date" th:field="*{deadline}">
+                            <input type="date" th:field="*{deadline}" id="deadlineInput">
                         </div>
                     </div>
 
@@ -156,7 +156,9 @@
                                min="0"
                                max="100"
                                step="10"
-                               th:field="*{progress}"
+                               id="progress"
+                               name="progress"
+                               th:value="${task.progress != null ? task.progress : 0}"
                                oninput="progressValue.innerText=this.value">
                     </div>
 
@@ -181,8 +183,11 @@
                         <label>Mô tả công việc</label>
                         <div class="textarea-box">
                             <i class="fa-solid fa-align-left"></i>
-                            <textarea th:field="*{description}" rows="5"
+                            <textarea th:field="*{description}" id="descriptionInput" rows="5" maxlength="500"
                                       placeholder="Nhập mô tả công việc..."></textarea>
+                        </div>
+                        <div class="char-counter">
+                            <span id="charCount">0</span>/500 ký tự
                         </div>
                     </div>
                 </div>
@@ -198,6 +203,7 @@
         </section>
     </main>
 </div>
+
 <script>
     document.addEventListener("DOMContentLoaded", function () {
 
@@ -205,9 +211,17 @@
         const status = document.querySelector("select[name='status']");
         const progressValue = document.getElementById("progressValue");
 
+        // ---------- Đồng bộ progress -> status + fill màu thanh trượt ----------
+        function updateProgressFill(el) {
+            const val = Number(el.value);
+            el.style.background =
+                'linear-gradient(90deg, #2563eb 0%, #2563eb ' + val + '%, #e5e7eb ' + val + '%, #e5e7eb 100%)';
+        }
+
         if (progress) {
 
-            // Hiển thị giá trị ban đầu
+            updateProgressFill(progress);
+
             if (progressValue) {
                 progressValue.textContent = progress.value;
             }
@@ -218,23 +232,101 @@
                     progressValue.textContent = this.value;
                 }
 
+                updateProgressFill(this);
+
                 if (status) {
+                    if (this.value == 0) {
+                        status.value = "Chưa làm";
+                    } else if (this.value == 100) {
+                        status.value = "Hoàn thành";
+                    } else {
+                        status.value = "Đang làm";
+                    }
+                }
+            });
+        }
 
-    if (this.value == 0) {
+        // ---------- Đổi màu khung theo mức ưu tiên ----------
+        const prioritySelect = document.getElementById("prioritySelect");
+        const priorityBox = document.getElementById("priorityBox");
 
-        status.value = "Chưa làm";
+        function updatePriorityColor() {
+            if (!prioritySelect || !priorityBox) return;
 
-    } else if (this.value == 100) {
+            priorityBox.classList.remove("priority-box-high", "priority-box-medium", "priority-box-low");
 
-        status.value = "Hoàn thành";
+            if (prioritySelect.value === "HIGH") {
+                priorityBox.classList.add("priority-box-high");
+            } else if (prioritySelect.value === "MEDIUM") {
+                priorityBox.classList.add("priority-box-medium");
+            } else if (prioritySelect.value === "LOW") {
+                priorityBox.classList.add("priority-box-low");
+            }
+        }
 
-    } else {
+        if (prioritySelect) {
+            updatePriorityColor();
+            prioritySelect.addEventListener("change", updatePriorityColor);
+        }
 
-        status.value = "Đang làm";
+        // ---------- Đếm ký tự mô tả ----------
+        const descriptionInput = document.getElementById("descriptionInput");
+        const charCount = document.getElementById("charCount");
 
-    }
+        function updateCharCount() {
+            if (descriptionInput && charCount) {
+                charCount.textContent = descriptionInput.value.length;
+            }
+        }
 
-}
+        if (descriptionInput) {
+            updateCharCount();
+            descriptionInput.addEventListener("input", updateCharCount);
+        }
+
+        // ---------- Chặn deadline quá khứ khi tạo task mới ----------
+        const deadlineInput = document.getElementById("deadlineInput");
+        const taskIdField = document.getElementById("taskIdField");
+
+        if (deadlineInput && taskIdField && !taskIdField.value) {
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            deadlineInput.setAttribute('min', yyyy + '-' + mm + '-' + dd);
+        }
+
+        // ---------- Validate + highlight field trống khi submit ----------
+        const taskForm = document.getElementById("taskForm");
+
+        if (taskForm) {
+            taskForm.addEventListener("submit", function (e) {
+                let hasError = false;
+
+                taskForm.querySelectorAll('[required]').forEach(function (field) {
+                    const box = field.closest('.input-box');
+                    if (!field.value || !field.value.trim()) {
+                        hasError = true;
+                        if (box) box.classList.add('input-error');
+                    } else if (box) {
+                        box.classList.remove('input-error');
+                    }
+                });
+
+                if (hasError) {
+                    e.preventDefault();
+                }
+            });
+
+            taskForm.querySelectorAll('.input-box input, .input-box select').forEach(function (field) {
+                field.addEventListener('input', function () {
+                    const box = field.closest('.input-box');
+                    if (box) box.classList.remove('input-error');
+                });
+                field.addEventListener('change', function () {
+                    const box = field.closest('.input-box');
+                    if (box) box.classList.remove('input-error');
+                });
             });
         }
 
