@@ -39,7 +39,7 @@
                  class="avatar">
 
             <img th:unless="${session.user != null and session.user.avatar != null and !#strings.isEmpty(session.user.avatar)}"
-                 th:src="@{/avatars/default.jpg}"
+                 th:src="@{/avatars/default.png}"
                  alt="Avatar"
                  class="avatar">
 
@@ -78,58 +78,24 @@
     <main class="main">
         <!-- TOPBAR -->
         <div class="topbar">
-
             <div class="welcome">
                 <h1>Danh Sách Công Việc</h1>
                 <p>Quản lý, theo dõi và cập nhật toàn bộ công việc trong hệ thống.</p>
             </div>
 
             <div class="topbar-right">
-
-                <form action="/tasks/filter" method="get" class="filter-form">
-
+                <!-- FORM SEARCH -->
+                <form action="/tasks/search" method="get" class="search-form">
                     <div class="search-box">
                         <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text"
-                               name="keyword"
-                               placeholder="Tìm công việc...">
+                        <input type="text" name="keyword" th:value="${keyword}" placeholder="Tìm theo tên công việc...">
                     </div>
-
-                    <select name="status">
-                        <option value="">Trạng thái</option>
-                        <option value="Chưa làm">Chưa làm</option>
-                        <option value="Đang làm">Đang làm</option>
-                        <option value="Hoàn thành">Hoàn thành</option>
-                    </select>
-
-                    <select name="priority">
-                        <option value="">Ưu tiên</option>
-                        <option value="HIGH">🔴 Cao</option>
-                        <option value="MEDIUM">🟡 Trung bình</option>
-                        <option value="LOW">🟢 Thấp</option>
-                    </select>
-
-                    <select name="sort">
-                        <option value="">Sắp xếp</option>
-                        <option value="asc">Deadline gần nhất</option>
-                        <option value="desc">Deadline xa nhất</option>
-                    </select>
-
-                    <button class="filter-btn">
-                        <i class="fa-solid fa-filter"></i>
-                        Lọc
-                    </button>
-
                 </form>
 
-                <!-- Thêm -->
                 <a href="/tasks/new" class="add-task-btn">
-                    <i class="fa-solid fa-plus"></i>
-                    Thêm công việc
+                    <i class="fa-solid fa-plus"></i> Thêm công việc
                 </a>
-
             </div>
-
         </div>
 
         <!-- OVERVIEW -->
@@ -144,6 +110,22 @@
             <div class="overview-emoji">📝</div>
         </section>
 
+        <!-- FILTER TABS -->
+        <div class="filter-tabs" id="filterTabs">
+            <button class="filter-tab active" data-filter="all">
+                Tất cả <span class="filter-count" id="countAll">0</span>
+            </button>
+            <button class="filter-tab" data-filter="Chưa làm">
+                Chưa làm <span class="filter-count" id="countTodo">0</span>
+            </button>
+            <button class="filter-tab" data-filter="Đang làm">
+                Đang làm <span class="filter-count" id="countDoing">0</span>
+            </button>
+            <button class="filter-tab" data-filter="Hoàn thành">
+                Hoàn thành <span class="filter-count" id="countDone">0</span>
+            </button>
+        </div>
+
         <!-- PANEL TABLE -->
         <section class="panel">
             <div class="panel-header">
@@ -157,24 +139,25 @@
             </div>
 
             <div class="table-wrapper">
-                <table class="task-table">
+                <table class="task-table" id="taskTable">
                     <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Tên công việc</th>
+                        <th class="sortable" data-sort="text">Tên công việc <i class="fa-solid fa-sort"></i></th>
                         <th>Mô tả</th>
                         <th>Người thực hiện</th>
                         <th>Trạng thái</th>
                         <th>Ưu tiên</th>
-                        <th>Tiến độ</th>
-                        <th>Deadline</th>
+                        <th class="sortable" data-sort="number">Tiến độ <i class="fa-solid fa-sort"></i></th>
+                        <th class="sortable" data-sort="date">Deadline <i class="fa-solid fa-sort"></i></th>
                         <th class="text-center">Thao tác</th>
                     </tr>
                     </thead>
 
-                    <tbody>
+                    <tbody id="taskTableBody">
 
-                    <tr th:each="task : ${tasks}">
+                    <tr th:each="task : ${tasks}"
+                        th:attr="data-status=${task.status},data-progress=${task.progress != null ? task.progress : 0},data-deadline=${task.deadline != null ? task.deadline : ''}">
 
                         <td th:text="${task.id}">1</td>
 
@@ -208,6 +191,12 @@
             Chưa làm
         </span>
 
+                            <span class="status-badge todo"
+                                  th:if="${task.status != 'Hoàn thành' and task.status != 'Đang làm' and task.status != 'Chưa làm'}"
+                                  th:text="${task.status != null ? task.status : 'Chưa rõ'}">
+            Chưa rõ
+        </span>
+
                         </td>
 
                         <!-- Priority -->
@@ -228,6 +217,11 @@
             🟢 Thấp
         </span>
 
+                            <span class="priority priority-medium"
+                                  th:if="${task.priority != 'HIGH' and task.priority != 'MEDIUM' and task.priority != 'LOW'}">
+            🟡 Trung bình
+        </span>
+
                         </td>
 
                         <!-- Progress -->
@@ -235,13 +229,14 @@
 
                             <div class="progress">
 
-                                <div class="progress-bar"
-                                     th:style="'width:' + ${task.progress} + '%'">
+                                <div class="progress-bar js-progress-bar"
+                                     th:attr="data-progress=${task.progress != null ? task.progress : 0}"
+                                     style="width:0%">
                                 </div>
 
                             </div>
 
-                            <small th:text="${task.progress + '%'}">0%</small>
+                            <small th:text="${(task.progress != null ? task.progress : 0) + '%'}">0%</small>
 
                         </td>
 
@@ -255,6 +250,10 @@
                             <span th:if="${task.deadline == null}">
             --
         </span>
+
+                            <span class="overdue-badge js-overdue-badge" style="display:none;">
+                                ⚠️ Quá hạn
+                            </span>
 
                         </td>
 
@@ -287,7 +286,7 @@
 
                     </tr>
 
-                    <tr th:if="${#lists.isEmpty(tasks)}">
+                    <tr th:if="${#lists.isEmpty(tasks)}" id="emptyRow">
 
                         <td colspan="9" class="empty-cell">
                             Chưa có công việc nào trong hệ thống.
@@ -296,10 +295,143 @@
                     </tr>
                     </tbody>
                 </table>
+
+                <div class="empty-cell" id="noResultRow" style="display:none;">
+                    Không có công việc nào khớp với bộ lọc đã chọn.
+                </div>
             </div>
         </section>
     </main>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const tableBody = document.getElementById('taskTableBody');
+        const rows = Array.from(tableBody.querySelectorAll('tr[data-status]'));
+        const noResultRow = document.getElementById('noResultRow');
+
+        // ---------- Cảnh báo quá hạn ----------
+        const todayStr = new Date().toISOString().slice(0, 10);
+
+        rows.forEach(function (row) {
+            const status = row.getAttribute('data-status');
+            const deadline = row.getAttribute('data-deadline');
+            const badge = row.querySelector('.js-overdue-badge');
+
+            if (badge && deadline && status !== 'Hoàn thành' && deadline < todayStr) {
+                badge.style.display = 'inline-block';
+            }
+        });
+
+        // ---------- Progress bar chạy mượt khi load ----------
+        const progressBars = tableBody.querySelectorAll('.js-progress-bar');
+
+        setTimeout(function () {
+            progressBars.forEach(function (bar) {
+                const target = bar.getAttribute('data-progress') || 0;
+                bar.style.transition = 'width 0.6s ease';
+                bar.style.width = target + '%';
+            });
+        }, 100);
+
+        // ---------- Filter tabs theo trạng thái ----------
+        const filterTabs = document.querySelectorAll('.filter-tab');
+
+        const counts = { all: rows.length, todo: 0, doing: 0, done: 0 };
+
+        rows.forEach(function (row) {
+            const status = row.getAttribute('data-status');
+            if (status === 'Chưa làm') counts.todo++;
+            else if (status === 'Đang làm') counts.doing++;
+            else if (status === 'Hoàn thành') counts.done++;
+        });
+
+        const countAllEl = document.getElementById('countAll');
+        const countTodoEl = document.getElementById('countTodo');
+        const countDoingEl = document.getElementById('countDoing');
+        const countDoneEl = document.getElementById('countDone');
+
+        if (countAllEl) countAllEl.textContent = counts.all;
+        if (countTodoEl) countTodoEl.textContent = counts.todo;
+        if (countDoingEl) countDoingEl.textContent = counts.doing;
+        if (countDoneEl) countDoneEl.textContent = counts.done;
+
+        function applyFilter(filter) {
+            let visibleCount = 0;
+
+            rows.forEach(function (row) {
+                const status = row.getAttribute('data-status');
+                const match = (filter === 'all') || (status === filter);
+                row.style.display = match ? '' : 'none';
+                if (match) visibleCount++;
+            });
+
+            if (noResultRow) {
+                noResultRow.style.display = (visibleCount === 0 && rows.length > 0) ? 'block' : 'none';
+            }
+        }
+
+        filterTabs.forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                filterTabs.forEach(function (t) { t.classList.remove('active'); });
+                tab.classList.add('active');
+                applyFilter(tab.getAttribute('data-filter'));
+            });
+        });
+
+        // ---------- Sắp xếp theo cột ----------
+        const sortableHeaders = document.querySelectorAll('.sortable');
+
+        sortableHeaders.forEach(function (header, headerIndex) {
+            let ascending = true;
+
+            header.addEventListener('click', function () {
+                const type = header.getAttribute('data-sort');
+                const cellIndex = Array.from(header.parentElement.children).indexOf(header);
+
+                const sortedRows = rows.slice().sort(function (a, b) {
+                    let valA, valB;
+
+                    if (type === 'number') {
+                        valA = parseFloat(a.getAttribute('data-progress')) || 0;
+                        valB = parseFloat(b.getAttribute('data-progress')) || 0;
+                    } else if (type === 'date') {
+                        valA = a.getAttribute('data-deadline') || '9999-99-99';
+                        valB = b.getAttribute('data-deadline') || '9999-99-99';
+                    } else {
+                        valA = a.children[cellIndex].textContent.trim().toLowerCase();
+                        valB = b.children[cellIndex].textContent.trim().toLowerCase();
+                    }
+
+                    if (valA < valB) return ascending ? -1 : 1;
+                    if (valA > valB) return ascending ? 1 : -1;
+                    return 0;
+                });
+
+                sortedRows.forEach(function (row) {
+                    tableBody.appendChild(row);
+                });
+
+                // reset icon tất cả header
+                sortableHeaders.forEach(function (h) {
+                    const icon = h.querySelector('i');
+                    if (icon) {
+                        icon.className = 'fa-solid fa-sort';
+                    }
+                });
+
+                const icon = header.querySelector('i');
+                if (icon) {
+                    icon.className = ascending ? 'fa-solid fa-sort-up' : 'fa-solid fa-sort-down';
+                }
+
+                ascending = !ascending;
+            });
+        });
+
+    });
+</script>
 
 </body>
 </html>
