@@ -78,24 +78,58 @@
     <main class="main">
         <!-- TOPBAR -->
         <div class="topbar">
+
             <div class="welcome">
                 <h1>Danh Sách Công Việc</h1>
                 <p>Quản lý, theo dõi và cập nhật toàn bộ công việc trong hệ thống.</p>
             </div>
 
             <div class="topbar-right">
-                <!-- FORM SEARCH -->
-                <form action="/tasks/search" method="get" class="search-form">
+
+                <form action="/tasks/filter" method="get" class="filter-form">
+
                     <div class="search-box">
                         <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" name="keyword" placeholder="Tìm theo tên công việc...">
+                        <input type="text"
+                               name="keyword"
+                               placeholder="Tìm công việc...">
                     </div>
+
+                    <select name="status">
+                        <option value="">Trạng thái</option>
+                        <option value="Chưa làm">Chưa làm</option>
+                        <option value="Đang làm">Đang làm</option>
+                        <option value="Hoàn thành">Hoàn thành</option>
+                    </select>
+
+                    <select name="priority">
+                        <option value="">Ưu tiên</option>
+                        <option value="HIGH">🔴 Cao</option>
+                        <option value="MEDIUM">🟡 Trung bình</option>
+                        <option value="LOW">🟢 Thấp</option>
+                    </select>
+
+                    <select name="sort">
+                        <option value="">Sắp xếp</option>
+                        <option value="asc">Deadline gần nhất</option>
+                        <option value="desc">Deadline xa nhất</option>
+                    </select>
+
+                    <button class="filter-btn">
+                        <i class="fa-solid fa-filter"></i>
+                        Lọc
+                    </button>
+
                 </form>
 
+                <!-- Thêm -->
                 <a href="/tasks/new" class="add-task-btn">
-                    <i class="fa-solid fa-plus"></i> Thêm công việc
+                    <i class="fa-solid fa-plus"></i>
+                    Thêm công việc
                 </a>
+
             </div>
+
         </div>
 
         <!-- OVERVIEW -->
