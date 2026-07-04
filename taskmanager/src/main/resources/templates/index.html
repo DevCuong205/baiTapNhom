@@ -92,14 +92,44 @@
             </div>
 
             <div class="topbar-right">
-                <div class="search-box">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" placeholder="Tìm kiếm công việc, người dùng...">
-                </div>
+                <form action="/tasks/search" method="get" class="search-form">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" name="keyword" placeholder="Tìm kiếm công việc..." id="dashboardSearch">
+                    </div>
+                </form>
 
-                <button class="icon-btn" type="button">
-                    <i class="fa-regular fa-bell"></i>
-                </button>
+                <div class="notif-wrapper">
+                    <button class="icon-btn" type="button" id="notifBtn">
+                        <i class="fa-regular fa-bell"></i>
+                        <span class="notif-dot" th:if="${todoTasks} > 0"></span>
+                    </button>
+
+                    <div class="notif-dropdown" id="notifDropdown">
+                        <div class="notif-header">Thông báo nhanh</div>
+
+                        <div class="notif-item" th:if="${todoTasks} > 0">
+                            <i class="fa-solid fa-circle-exclamation text-red"></i>
+                            <span>Bạn có <b th:text="${todoTasks}">0</b> công việc chưa làm.</span>
+                        </div>
+
+                        <div class="notif-item" th:if="${doingTasks} > 0">
+                            <i class="fa-solid fa-spinner text-yellow"></i>
+                            <span>Đang xử lý <b th:text="${doingTasks}">0</b> công việc.</span>
+                        </div>
+
+                        <div class="notif-item" th:if="${completedTasks} > 0">
+                            <i class="fa-solid fa-circle-check text-green"></i>
+                            <span>Đã hoàn thành <b th:text="${completedTasks}">0</b> công việc.</span>
+                        </div>
+
+                        <div class="notif-item"
+                             th:if="${todoTasks == 0 and doingTasks == 0 and completedTasks == 0}">
+                            <i class="fa-solid fa-circle-info"></i>
+                            <span>Chưa có công việc nào trong hệ thống.</span>
+                        </div>
+                    </div>
+                </div>
 
                 <a href="/tasks" class="add-task-btn">
                     <i class="fa-solid fa-plus"></i> Xem công việc
@@ -108,7 +138,7 @@
         </div>
 
         <!-- OVERVIEW -->
-        <section class="overview-banner">
+        <section class="overview-banner fade-in-item">
             <div class="overview-left">
                 <h2>Tổng quan hệ thống</h2>
                 <p>
@@ -118,16 +148,16 @@
 
                 <div class="overview-tags">
                     <span class="tag">
-                        <span th:text="${totalTasks}">0</span> Công việc
+                        <span class="count-up" th:attr="data-target=${totalTasks}">0</span> Công việc
                     </span>
                     <span class="tag">
-                        <span th:text="${completedTasks}">0</span> Hoàn thành
+                        <span class="count-up" th:attr="data-target=${completedTasks}">0</span> Hoàn thành
                     </span>
                     <span class="tag">
-                        <span th:text="${doingTasks}">0</span> Đang làm
+                        <span class="count-up" th:attr="data-target=${doingTasks}">0</span> Đang làm
                     </span>
                     <span class="tag">
-                        <span th:text="${todoTasks}">0</span> Chưa làm
+                        <span class="count-up" th:attr="data-target=${todoTasks}">0</span> Chưa làm
                     </span>
                 </div>
             </div>
@@ -137,47 +167,47 @@
 
         <!-- STATS -->
         <section class="stats-grid">
-            <div class="stat-card">
+            <div class="stat-card fade-in-item">
                 <div class="stat-top">
                     <div class="stat-icon blue">
                         <i class="fa-solid fa-clipboard-list"></i>
                     </div>
                 </div>
                 <h4>Tổng công việc</h4>
-                <div class="stat-number text-blue" th:text="${totalTasks}">0</div>
+                <div class="stat-number text-blue count-up" th:attr="data-target=${totalTasks}">0</div>
                 <div class="stat-note">Tổng số task trong hệ thống</div>
             </div>
 
-            <div class="stat-card">
+            <div class="stat-card fade-in-item">
                 <div class="stat-top">
                     <div class="stat-icon green">
                         <i class="fa-solid fa-circle-check"></i>
                     </div>
                 </div>
                 <h4>Hoàn thành</h4>
-                <div class="stat-number text-green" th:text="${completedTasks}">0</div>
+                <div class="stat-number text-green count-up" th:attr="data-target=${completedTasks}">0</div>
                 <div class="stat-note">Các công việc đã hoàn tất</div>
             </div>
 
-            <div class="stat-card">
+            <div class="stat-card fade-in-item">
                 <div class="stat-top">
                     <div class="stat-icon yellow">
                         <i class="fa-solid fa-spinner"></i>
                     </div>
                 </div>
                 <h4>Đang làm</h4>
-                <div class="stat-number text-yellow" th:text="${doingTasks}">0</div>
+                <div class="stat-number text-yellow count-up" th:attr="data-target=${doingTasks}">0</div>
                 <div class="stat-note">Task đang trong quá trình xử lý</div>
             </div>
 
-            <div class="stat-card">
+            <div class="stat-card fade-in-item">
                 <div class="stat-top">
                     <div class="stat-icon red">
                         <i class="fa-solid fa-circle-xmark"></i>
                     </div>
                 </div>
                 <h4>Chưa làm</h4>
-                <div class="stat-number text-red" th:text="${todoTasks}">0</div>
+                <div class="stat-number text-red count-up" th:attr="data-target=${todoTasks}">0</div>
                 <div class="stat-note">Công việc chưa bắt đầu</div>
             </div>
         </section>
@@ -185,7 +215,7 @@
         <!-- CONTENT GRID -->
         <section class="content-grid">
             <!-- USERS -->
-            <div class="panel">
+            <div class="panel fade-in-item">
                 <div class="panel-header">
                     <div>
                         <h3>Tổng người dùng</h3>
@@ -198,14 +228,14 @@
                         <i class="fa-solid fa-users"></i>
                     </div>
                     <div>
-                        <div class="user-summary-number" th:text="${totalUsers}">0</div>
+                        <div class="user-summary-number count-up" th:attr="data-target=${totalUsers}">0</div>
                         <div class="user-summary-text">Người dùng đang hoạt động trong hệ thống</div>
                     </div>
                 </div>
             </div>
 
             <!-- CHART -->
-            <div class="panel">
+            <div class="panel fade-in-item">
                 <div class="panel-header">
                     <div>
                         <h3>Thống kê công việc</h3>
@@ -221,7 +251,7 @@
 
         <!-- QUICK INFO -->
         <section class="bottom-grid">
-            <div class="panel">
+            <div class="panel fade-in-item">
                 <div class="panel-header">
                     <div>
                         <h3>Tiến độ công việc</h3>
@@ -274,7 +304,7 @@
                 </div>
             </div>
 
-            <div class="panel">
+            <div class="panel fade-in-item">
                 <div class="panel-header">
                     <div>
                         <h3>Truy cập nhanh</h3>
@@ -310,9 +340,9 @@
 </div>
 
 <script th:inline="javascript">
-    const completed = [[${completedTasks}]];
-    const doing = [[${doingTasks}]];
-    const todo = [[${todoTasks}]];
+    const completed = /*[[${completedTasks}]]*/ 0;
+    const doing = /*[[${doingTasks}]]*/ 0;
+    const todo = /*[[${todoTasks}]]*/ 0;
 
     const ctx = document.getElementById('taskChart');
     if (ctx) {
@@ -336,6 +366,63 @@
             }
         });
     }
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        // ---------- Đếm số chạy (count-up) ----------
+        const counters = document.querySelectorAll('.count-up');
+
+        counters.forEach(function (el) {
+            const target = parseInt(el.getAttribute('data-target'), 10) || 0;
+            const duration = 900; // ms
+            const startTime = performance.now();
+
+            function tick(now) {
+                const progress = Math.min((now - startTime) / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3); // ease-out
+                const value = Math.round(eased * target);
+                el.textContent = value;
+
+                if (progress < 1) {
+                    requestAnimationFrame(tick);
+                } else {
+                    el.textContent = target;
+                }
+            }
+
+            requestAnimationFrame(tick);
+        });
+
+        // ---------- Dropdown thông báo ----------
+        const notifBtn = document.getElementById('notifBtn');
+        const notifDropdown = document.getElementById('notifDropdown');
+
+        if (notifBtn && notifDropdown) {
+            notifBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                notifDropdown.classList.toggle('show');
+            });
+
+            document.addEventListener('click', function (e) {
+                if (!notifDropdown.contains(e.target) && !notifBtn.contains(e.target)) {
+                    notifDropdown.classList.remove('show');
+                }
+            });
+        }
+
+        // ---------- Hiệu ứng xuất hiện dạng bậc thang ----------
+        const fadeItems = document.querySelectorAll('.fade-in-item');
+
+        fadeItems.forEach(function (el, index) {
+            el.style.transitionDelay = (index * 70) + 'ms';
+            requestAnimationFrame(function () {
+                el.classList.add('fade-in-visible');
+            });
+        });
+
+    });
 </script>
 
 </body>
