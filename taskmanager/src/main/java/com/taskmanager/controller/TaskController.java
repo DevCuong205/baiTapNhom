@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 @Controller
@@ -202,6 +203,68 @@ public class TaskController {
         model.addAttribute("tasks", tasks);
         model.addAttribute("totalTasks", tasks.size());
         model.addAttribute("keyword", keyword);
+
+        return "tasks";
+    }
+
+    @GetMapping("/tasks/filter")
+    public String filterTasks(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String priority,
+            @RequestParam(required = false) String sort,
+            Model model,
+            HttpSession session) {
+
+        User loginUser = (User) session.getAttribute("user");
+
+        if (loginUser == null) {
+            return "redirect:/login";
+        }
+
+        List<Task> tasks = taskRepository.findAll();
+
+        // Tìm kiếm
+        if (keyword != null && !keyword.isBlank()) {
+
+            tasks = tasks.stream()
+                    .filter(t -> t.getTitle().toLowerCase()
+                            .contains(keyword.toLowerCase()))
+                    .toList();
+        }
+
+        // Trạng thái
+        if (status != null && !status.isBlank()) {
+
+            tasks = tasks.stream()
+                    .filter(t -> status.equals(t.getStatus()))
+                    .toList();
+        }
+
+        // Ưu tiên
+        if (priority != null && !priority.isBlank()) {
+
+            tasks = tasks.stream()
+                    .filter(t -> priority.equals(t.getPriority()))
+                    .toList();
+        }
+
+        // Sắp xếp deadline
+        if ("asc".equals(sort)) {
+
+            tasks = tasks.stream()
+                    .sorted(Comparator.comparing(Task::getDeadline))
+                    .toList();
+
+        } else if ("desc".equals(sort)) {
+
+            tasks = tasks.stream()
+                    .sorted(Comparator.comparing(Task::getDeadline).reversed())
+                    .toList();
+        }
+
+        model.addAttribute("tasks", tasks);
+        model.addAttribute("totalTasks", tasks.size());
 
         return "tasks";
     }
