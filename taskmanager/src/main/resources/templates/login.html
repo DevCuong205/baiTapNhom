@@ -71,18 +71,18 @@
             </div>
 
             <!-- Thông báo lỗi -->
-            <div class="alert-error" th:if="${error}">
+            <div class="alert-error" id="loginError" th:if="${error}">
                 <i class="fa-solid fa-circle-exclamation"></i>
                 <span th:text="${error}">Sai tài khoản hoặc mật khẩu</span>
             </div>
 
-            <form action="/login" method="post" class="login-form">
+            <form action="/login" method="post" class="login-form" id="loginForm">
 
                 <div class="form-group">
                     <label>Tên đăng nhập</label>
                     <div class="input-box">
                         <i class="fa-solid fa-user"></i>
-                        <input type="text" name="username" placeholder="Nhập tên đăng nhập..." required>
+                        <input type="text" name="username" id="usernameInput" placeholder="Nhập tên đăng nhập..." required>
                     </div>
                 </div>
 
@@ -90,13 +90,16 @@
                     <label>Mật khẩu</label>
                     <div class="input-box">
                         <i class="fa-solid fa-lock"></i>
-                        <input type="password" name="password" placeholder="Nhập mật khẩu..." required>
+                        <input type="password" name="password" id="passwordInput" placeholder="Nhập mật khẩu..." required>
+                        <button type="button" class="toggle-password" id="togglePassword" aria-label="Hiện/ẩn mật khẩu">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
                     </div>
                 </div>
 
-                <button type="submit" class="login-btn">
+                <button type="submit" class="login-btn" id="loginBtn">
                     <i class="fa-solid fa-right-to-bracket"></i>
-                    Đăng nhập
+                    <span id="loginBtnText">Đăng nhập</span>
                 </button>
             </form>
 
@@ -107,6 +110,82 @@
     </div>
 
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        // ---------- Hiện / ẩn mật khẩu ----------
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('passwordInput');
+
+        if (togglePassword && passwordInput) {
+            togglePassword.addEventListener('click', function () {
+                const isPassword = passwordInput.type === 'password';
+                passwordInput.type = isPassword ? 'text' : 'password';
+
+                const icon = togglePassword.querySelector('i');
+                if (icon) {
+                    icon.classList.toggle('fa-eye');
+                    icon.classList.toggle('fa-eye-slash');
+                }
+            });
+        }
+
+        // ---------- Validate + loading state khi submit ----------
+        const form = document.getElementById('loginForm');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginBtnText = document.getElementById('loginBtnText');
+
+        if (form) {
+            form.addEventListener('submit', function (e) {
+                let hasError = false;
+
+                form.querySelectorAll('[required]').forEach(function (field) {
+                    const box = field.closest('.input-box');
+                    if (!field.value || !field.value.trim()) {
+                        hasError = true;
+                        if (box) box.classList.add('input-error');
+                    } else if (box) {
+                        box.classList.remove('input-error');
+                    }
+                });
+
+                if (hasError) {
+                    e.preventDefault();
+                    return;
+                }
+
+                if (loginBtn && loginBtnText) {
+                    loginBtn.disabled = true;
+                    loginBtn.classList.add('loading');
+                    loginBtnText.textContent = 'Đang đăng nhập...';
+                }
+            });
+
+            form.querySelectorAll('.input-box input').forEach(function (field) {
+                field.addEventListener('input', function () {
+                    const box = field.closest('.input-box');
+                    if (box) box.classList.remove('input-error');
+                });
+            });
+        }
+
+        // ---------- Hiệu ứng rung + tự ẩn khi có lỗi đăng nhập ----------
+        const loginError = document.getElementById('loginError');
+
+        if (loginError) {
+            loginError.classList.add('shake');
+
+            setTimeout(function () {
+                loginError.classList.add('fade-out');
+                setTimeout(function () {
+                    loginError.style.display = 'none';
+                }, 400);
+            }, 4000);
+        }
+
+    });
+</script>
 
 </body>
 </html>
