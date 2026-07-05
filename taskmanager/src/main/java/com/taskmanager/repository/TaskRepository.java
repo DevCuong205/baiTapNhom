@@ -2,6 +2,8 @@ package com.taskmanager.repository;
 
 import com.taskmanager.entity.Task;
 import com.taskmanager.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -10,18 +12,19 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     long countByStatus(String status);
 
-    List<Task> findByTitleContainingIgnoreCase(String keyword);
+    Page<Task> findByTitleContainingIgnoreCase(String keyword, Pageable pageable);
 
-    List<Task> findByUser(User user);
+    Page<Task> findByUser(User user, Pageable pageable);
 
-    List<Task> findByStatus(String status);
+    Page<Task> findByStatus(String status, Pageable pageable);
 
-    List<Task> findByPriority(String priority);
+    Page<Task> findByPriority(String priority, Pageable pageable);
 
-    List<Task> findByStatusAndPriority(String status, String priority);
+    Page<Task> findByStatusAndPriority(String status,
+                                       String priority,
+                                       Pageable pageable);
 
     List<Task> findAllByOrderByDeadlineAsc();
 
     List<Task> findAllByOrderByDeadlineDesc();
-
 }

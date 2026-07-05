@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -24,7 +27,11 @@ public class TaskController {
     private UserRepository userRepository;
 
     @GetMapping("/tasks")
-    public String listTasks(Model model, HttpSession session) {
+    public String listTasks(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            Model model,
+            HttpSession session) {
 
         User loginUser = (User) session.getAttribute("user");
 
@@ -32,16 +39,25 @@ public class TaskController {
             return "redirect:/login";
         }
 
-        List<Task> tasks;
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Task> taskPage;
 
         if ("ADMIN".equals(loginUser.getRole())) {
-            tasks = taskRepository.findAll();
+
+            taskPage = taskRepository.findAll(pageable);
+
         } else {
-            tasks = taskRepository.findByUser(loginUser);
+
+            taskPage = taskRepository.findByUser(loginUser, pageable);
         }
 
-        model.addAttribute("tasks", tasks);
-        model.addAttribute("totalTasks", tasks.size());
+        model.addAttribute("tasks", taskPage.getContent());
+        model.addAttribute("totalTasks", taskPage.getTotalElements());
+
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", taskPage.getTotalPages());
+        model.addAttribute("size", size);
 
         return "tasks";
     }
@@ -175,9 +191,12 @@ public class TaskController {
     }
 
     @GetMapping("/tasks/search")
-    public String searchTask(@RequestParam String keyword,
-                             Model model,
-                             HttpSession session) {
+    public String searchTask(
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            Model model,
+            HttpSession session) {
 
         User loginUser = (User) session.getAttribute("user");
 
@@ -185,23 +204,25 @@ public class TaskController {
             return "redirect:/login";
         }
 
-        List<Task> tasks;
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Task> taskPage;
 
         if ("ADMIN".equals(loginUser.getRole())) {
 
-            tasks = taskRepository.findByTitleContainingIgnoreCase(keyword);
+            taskPage = taskRepository.findByTitleContainingIgnoreCase(keyword, pageable);
 
         } else {
 
-            tasks = taskRepository.findByUser(loginUser)
-                    .stream()
-                    .filter(task -> task.getTitle().toLowerCase()
-                            .contains(keyword.toLowerCase()))
-                    .toList();
+            taskPage = taskRepository.findByUser(loginUser, pageable);
         }
 
-        model.addAttribute("tasks", tasks);
-        model.addAttribute("totalTasks", tasks.size());
+        model.addAttribute("tasks", taskPage.getContent());
+        model.addAttribute("totalTasks", taskPage.getTotalElements());
+
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", taskPage.getTotalPages());
+        model.addAttribute("size", size);
         model.addAttribute("keyword", keyword);
 
         return "tasks";
