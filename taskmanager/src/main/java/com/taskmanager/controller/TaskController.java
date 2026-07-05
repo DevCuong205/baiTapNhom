@@ -14,7 +14,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 
 @Controller
@@ -30,6 +29,9 @@ public class TaskController {
     public String listTasks(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String priority,
             Model model,
             HttpSession session) {
 
@@ -45,23 +47,57 @@ public class TaskController {
 
         if ("ADMIN".equals(loginUser.getRole())) {
 
-            taskPage = taskRepository.findAll(pageable);
+            if (keyword != null && !keyword.isBlank()) {
+                taskPage = taskRepository.findByTitleContainingIgnoreCase(keyword, pageable);
+            } else {
+                taskPage = taskRepository.findAll(pageable);
+            }
 
         } else {
 
-            taskPage = taskRepository.findByUser(loginUser, pageable);
+            if (keyword != null && !keyword.isBlank()) {
+                taskPage = taskRepository.findByUserAndTitleContainingIgnoreCase(loginUser, keyword, pageable);
+            } else {
+                taskPage = taskRepository.findByUser(loginUser, pageable);
+            }
         }
 
-        model.addAttribute("tasks", taskPage.getContent());
+        List<Task> tasks = taskPage.getContent();
+
+        if (status != null && !status.isBlank()) {
+            tasks = tasks.stream()
+                    .filter(t -> status.equalsIgnoreCase(t.getStatus()))
+                    .toList();
+        }
+
+        if (priority != null && !priority.isBlank()) {
+            tasks = tasks.stream()
+                    .filter(t -> priority.equalsIgnoreCase(t.getPriority()))
+                    .toList();
+        }
+
+        model.addAttribute("tasks", tasks);
         model.addAttribute("totalTasks", taskPage.getTotalElements());
 
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", taskPage.getTotalPages());
         model.addAttribute("size", size);
 
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("status", status);
+        model.addAttribute("priority", priority);
+
+        model.addAttribute("todoTasks",
+                taskRepository.countByStatus("Chưa làm"));
+
+        model.addAttribute("doingTasks",
+                taskRepository.countByStatus("Đang làm"));
+
+        model.addAttribute("completedTasks",
+                taskRepository.countByStatus("Hoàn thành"));
+
         return "tasks";
     }
-
     @GetMapping("/tasks/new")
     public String showForm(Model model, HttpSession session) {
 
@@ -189,105 +225,4 @@ public class TaskController {
 
         return "redirect:/tasks";
     }
-
-    @GetMapping("/tasks/search")
-    public String searchTask(
-            @RequestParam String keyword,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size,
-            Model model,
-            HttpSession session) {
-
-        User loginUser = (User) session.getAttribute("user");
-
-        if (loginUser == null) {
-            return "redirect:/login";
-        }
-
-        Pageable pageable = PageRequest.of(page, size);
-
-        Page<Task> taskPage;
-
-        if ("ADMIN".equals(loginUser.getRole())) {
-
-            taskPage = taskRepository.findByTitleContainingIgnoreCase(keyword, pageable);
-
-        } else {
-
-            taskPage = taskRepository.findByUser(loginUser, pageable);
-        }
-
-        model.addAttribute("tasks", taskPage.getContent());
-        model.addAttribute("totalTasks", taskPage.getTotalElements());
-
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", taskPage.getTotalPages());
-        model.addAttribute("size", size);
-        model.addAttribute("keyword", keyword);
-
-        return "tasks";
-    }
-
-    @GetMapping("/tasks/filter")
-    public String filterTasks(
-            @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String status,
-            @RequestParam(required = false) String priority,
-            @RequestParam(required = false) String sort,
-            Model model,
-            HttpSession session) {
-
-        User loginUser = (User) session.getAttribute("user");
-
-        if (loginUser == null) {
-            return "redirect:/login";
-        }
-
-        List<Task> tasks = taskRepository.findAll();
-
-        // Tìm kiếm
-        if (keyword != null && !keyword.isBlank()) {
-
-            tasks = tasks.stream()
-                    .filter(t -> t.getTitle().toLowerCase()
-                            .contains(keyword.toLowerCase()))
-                    .toList();
-        }
-
-        // Trạng thái
-        if (status != null && !status.isBlank()) {
-
-            tasks = tasks.stream()
-                    .filter(t -> status.equals(t.getStatus()))
-                    .toList();
-        }
-
-        // Ưu tiên
-        if (priority != null && !priority.isBlank()) {
-
-            tasks = tasks.stream()
-                    .filter(t -> priority.equals(t.getPriority()))
-                    .toList();
-        }
-
-        // Sắp xếp deadline
-        if ("asc".equals(sort)) {
-
-            tasks = tasks.stream()
-                    .sorted(Comparator.comparing(Task::getDeadline))
-                    .toList();
-
-        } else if ("desc".equals(sort)) {
-
-            tasks = tasks.stream()
-                    .sorted(Comparator.comparing(Task::getDeadline).reversed())
-                    .toList();
-        }
-
-        model.addAttribute("tasks", tasks);
-        model.addAttribute("totalTasks", tasks.size());
-
-        return "tasks";
-    }
-
 }

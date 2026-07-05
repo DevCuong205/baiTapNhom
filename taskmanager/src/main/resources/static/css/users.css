@@ -392,10 +392,9 @@ a {
     border-radius: var(--radius-md);
 }
 
-.user-table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 1050px;
+.user-table{
+    width:100%;
+    border-collapse:collapse;
 }
 
 .user-table thead th {
@@ -418,12 +417,13 @@ a {
     vertical-align: middle;
 }
 
-.user-table tbody tr {
-    transition: var(--transition);
+.user-table tbody tr{
+    transition:.25s;
 }
 
-.user-table tbody tr:hover {
-    background: #f8faff;
+.user-table tbody tr:hover{
+    background:#f8fbff;
+    transform:scale(1.003);
 }
 
 .user-name {
@@ -516,6 +516,59 @@ a {
     font-style: italic;
 }
 
+.user-filter{
+    display:flex;
+    gap:15px;
+    margin:25px 0;
+    flex-wrap:wrap;
+}
+
+.filter-chip{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:12px 18px;
+    border-radius:40px;
+    color:#334155;
+    background:#fff;
+    text-decoration:none;
+    font-weight:600;
+    box-shadow:0 8px 18px rgba(0,0,0,.08);
+    transition:.25s;
+}
+
+.filter-chip:hover{
+    transform:translateY(-3px);
+}
+
+.filter-chip span{
+    background:#eef2ff;
+    color:#4338ca;
+    border-radius:30px;
+    padding:3px 10px;
+}
+
+.filter-chip.success{
+    background:#ecfdf5;
+}
+
+.filter-chip.warning{
+    background:#fffbeb;
+}
+
+.filter-chip.danger{
+    background:#fef2f2;
+}
+
+.filter-chip.active{
+    background:#4f46e5;
+    color:#fff;
+}
+
+.filter-chip.active span{
+    background:#fff;
+    color:#4f46e5;
+}
 /* RESPONSIVE */
 @media (max-width: 980px) {
     .app {
@@ -599,8 +652,6 @@ a {
 
     border-radius:12px;
 
-    text-decoration:none;
-
     background:white;
 
     color:#2563eb;
@@ -609,7 +660,7 @@ a {
 
     font-weight:700;
 
-    box-shadow:0 8px 20px rgba(37,99,235,.08);
+    text-decoration:none;
 
     transition:.25s;
 }
@@ -620,18 +671,12 @@ a {
 
     color:white;
 
-    transform:translateY(-2px);
-
-    box-shadow:0 12px 30px rgba(37,99,235,.25);
 }
 
 .page-btn.active{
 
-    background:linear-gradient(135deg,#2563eb,#4f8cff);
+    background:#2563eb;
 
     color:white;
 
-    border:none;
-
-    box-shadow:0 12px 25px rgba(37,99,235,.35);
 }

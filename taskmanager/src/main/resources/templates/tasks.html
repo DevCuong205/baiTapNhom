@@ -85,10 +85,13 @@
 
             <div class="topbar-right">
                 <!-- FORM SEARCH -->
-                <form action="/tasks/search" method="get" class="search-form">
+                <form action="/tasks" method="get" class="search-form">
                     <div class="search-box">
                         <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" name="keyword" th:value="${keyword}" placeholder="Tìm theo tên công việc...">
+                        <input type="text"
+                               name="keyword"
+                               th:value="${keyword}"
+                               placeholder="Tìm theo tên công việc...">
                     </div>
                 </form>
 
@@ -112,25 +115,25 @@
 
         <div class="task-filter">
 
-            <a href="/tasks" class="filter-chip active">
+            <a th:href="@{/tasks}" class="filter-chip active">
                 <i class="fa-solid fa-layer-group"></i>
                 Tất cả
                 <span th:text="${totalTasks}">0</span>
             </a>
 
-            <a href="/tasks/filter?status=Chưa làm" class="filter-chip danger">
+            <a th:href="@{/tasks(status='Chưa làm')}" class="filter-chip danger">
                 <i class="fa-solid fa-circle-xmark"></i>
                 Chưa làm
                 <span th:text="${todoTasks}">0</span>
             </a>
 
-            <a href="/tasks/filter?status=Đang làm" class="filter-chip warning">
+            <a th:href="@{/tasks(status='Đang làm')}" class="filter-chip warning">
                 <i class="fa-solid fa-spinner"></i>
                 Đang làm
                 <span th:text="${doingTasks}">0</span>
             </a>
 
-            <a href="/tasks/filter?status=Hoàn thành" class="filter-chip success">
+            <a th:href="@{/tasks(status='Hoàn thành')}" class="filter-chip success">
                 <i class="fa-solid fa-circle-check"></i>
                 Hoàn thành
                 <span th:text="${completedTasks}">0</span>
@@ -268,7 +271,6 @@
                             </span>
 
                         </td>
-
                         <!-- Thao tác -->
                         <td>
 
