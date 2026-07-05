@@ -110,20 +110,32 @@
             <div class="overview-emoji">📝</div>
         </section>
 
-        <!-- FILTER TABS -->
-        <div class="filter-tabs" id="filterTabs">
-            <button class="filter-tab active" data-filter="all">
-                Tất cả <span class="filter-count" id="countAll">0</span>
-            </button>
-            <button class="filter-tab" data-filter="Chưa làm">
-                Chưa làm <span class="filter-count" id="countTodo">0</span>
-            </button>
-            <button class="filter-tab" data-filter="Đang làm">
-                Đang làm <span class="filter-count" id="countDoing">0</span>
-            </button>
-            <button class="filter-tab" data-filter="Hoàn thành">
-                Hoàn thành <span class="filter-count" id="countDone">0</span>
-            </button>
+        <div class="task-filter">
+
+            <a href="/tasks" class="filter-chip active">
+                <i class="fa-solid fa-layer-group"></i>
+                Tất cả
+                <span th:text="${totalTasks}">0</span>
+            </a>
+
+            <a href="/tasks/filter?status=Chưa làm" class="filter-chip danger">
+                <i class="fa-solid fa-circle-xmark"></i>
+                Chưa làm
+                <span th:text="${todoTasks}">0</span>
+            </a>
+
+            <a href="/tasks/filter?status=Đang làm" class="filter-chip warning">
+                <i class="fa-solid fa-spinner"></i>
+                Đang làm
+                <span th:text="${doingTasks}">0</span>
+            </a>
+
+            <a href="/tasks/filter?status=Hoàn thành" class="filter-chip success">
+                <i class="fa-solid fa-circle-check"></i>
+                Hoàn thành
+                <span th:text="${completedTasks}">0</span>
+            </a>
+
         </div>
 
         <!-- PANEL TABLE -->

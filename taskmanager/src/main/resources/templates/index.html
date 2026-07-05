@@ -80,61 +80,47 @@
 
     <!-- MAIN -->
     <main class="main">
-
         <!-- TOPBAR -->
         <div class="topbar">
+
+            <!-- Bên trái -->
             <div class="welcome">
-                <h1>Dashboard Quản Lý Công Việc</h1>
+                <h1>Dashboard</h1>
                 <p>
-                    Xin chào <b th:text="${session.user.fullname}">User</b>,
-                    hôm nay bạn có <b th:text="${totalTasks}">0</b> công việc cần theo dõi.
+                    Xin chào
+                    <b th:text="${session.user.fullname}">User</b>,
+                    chúc bạn một ngày làm việc hiệu quả 🚀
                 </p>
             </div>
 
+            <!-- Bên phải -->
             <div class="topbar-right">
+
+                <!-- Search -->
                 <form action="/tasks/search" method="get" class="search-form">
                     <div class="search-box">
                         <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" name="keyword" placeholder="Tìm kiếm công việc..." id="dashboardSearch">
+                        <input type="text"
+                               name="keyword"
+                               placeholder="Tìm kiếm công việc...">
                     </div>
                 </form>
 
-                <div class="notif-wrapper">
-                    <button class="icon-btn" type="button" id="notifBtn">
-                        <i class="fa-regular fa-bell"></i>
-                        <span class="notif-dot" th:if="${todoTasks} > 0"></span>
-                    </button>
+                <!-- Thông báo -->
+                <button class="icon-btn">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="badge"
+                          th:text="${todoTasks}">0</span>
+                </button>
 
-                    <div class="notif-dropdown" id="notifDropdown">
-                        <div class="notif-header">Thông báo nhanh</div>
-
-                        <div class="notif-item" th:if="${todoTasks} > 0">
-                            <i class="fa-solid fa-circle-exclamation text-red"></i>
-                            <span>Bạn có <b th:text="${todoTasks}">0</b> công việc chưa làm.</span>
-                        </div>
-
-                        <div class="notif-item" th:if="${doingTasks} > 0">
-                            <i class="fa-solid fa-spinner text-yellow"></i>
-                            <span>Đang xử lý <b th:text="${doingTasks}">0</b> công việc.</span>
-                        </div>
-
-                        <div class="notif-item" th:if="${completedTasks} > 0">
-                            <i class="fa-solid fa-circle-check text-green"></i>
-                            <span>Đã hoàn thành <b th:text="${completedTasks}">0</b> công việc.</span>
-                        </div>
-
-                        <div class="notif-item"
-                             th:if="${todoTasks == 0 and doingTasks == 0 and completedTasks == 0}">
-                            <i class="fa-solid fa-circle-info"></i>
-                            <span>Chưa có công việc nào trong hệ thống.</span>
-                        </div>
-                    </div>
-                </div>
-
+                <!-- Công việc -->
                 <a href="/tasks" class="add-task-btn">
-                    <i class="fa-solid fa-plus"></i> Xem công việc
+                    <i class="fa-solid fa-list-check"></i>
+                    Công việc
                 </a>
+
             </div>
+
         </div>
 
         <!-- OVERVIEW -->
