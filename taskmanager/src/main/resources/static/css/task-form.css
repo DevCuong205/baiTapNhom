@@ -12,7 +12,7 @@
     --bg: #f4f6fc;
     --surface: #ffffff;
     --text-primary: #0f172a;
-    --text-secondary: #64748b;
+    --text-secondary: var(--text-secondary);
     --text-muted: #94a3b8;
     --border: #eaedf5;
     --radius-sm: 12px;
@@ -305,7 +305,7 @@ a {
 
 .form-group label {
     font-weight: 700;
-    color: #334155;
+    color: var(--text-primary);
     font-size: 14px;
 }
 
@@ -463,7 +463,7 @@ input[type="range"]::-moz-range-thumb {
 
 .cancel-btn {
     background: #eef1f6;
-    color: #334155;
+    color: var(--text-primary);
     padding: 12px 22px;
     border-radius: var(--radius-sm);
     font-weight: 600;
@@ -512,4 +512,32 @@ input[type="range"]::-moz-range-thumb {
     .form-grid {
         grid-template-columns: 1fr;
     }
+}
+.theme-btn{
+
+    width:46px;
+    height:46px;
+
+    border:none;
+
+    border-radius:14px;
+
+    background:#5b4bff;
+
+    color:white;
+
+    cursor:pointer;
+
+    font-size:18px;
+
+    transition:.3s;
+
+}
+
+.theme-btn:hover{
+
+    transform:translateY(-2px);
+
+    background:#4638db;
+
 }

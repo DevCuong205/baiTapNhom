@@ -1,0 +1,283 @@
+/* ===============================
+   DARK MODE - TASK MANAGER
+================================== */
+
+/* ---------- Theme ---------- */
+
+body.dark{
+    --bg:#0f172a;
+    --surface:#1e293b;
+    --surface2:#273449;
+
+    --text-primary:#f8fafc;
+    --text-secondary:#cbd5e1;
+    --text-muted:#94a3b8;
+
+    --border:#334155;
+
+    background:var(--bg);
+    color:var(--text-primary);
+}
+
+/* ---------- Layout ---------- */
+
+body.dark .main{
+    background:var(--bg);
+}
+
+body.dark .sidebar{
+    background:#111827;
+}
+
+body.dark .profile-card,
+body.dark .panel,
+body.dark .overview-banner,
+body.dark .topbar,
+body.dark .table-wrapper,
+body.dark .card,
+body.dark .modal-content{
+
+    background:var(--surface);
+    border:1px solid var(--border);
+
+}
+
+/* ---------- Text ---------- */
+
+body.dark h1,
+body.dark h2,
+body.dark h3,
+body.dark h4,
+body.dark h5,
+body.dark h6{
+    color:#fff;
+}
+
+body.dark p,
+body.dark span,
+body.dark td,
+body.dark th,
+body.dark label,
+body.dark small,
+body.dark li{
+
+    color:var(--text2);
+
+}
+
+/* ---------- Menu ---------- */
+
+body.dark .menu a{
+
+    color:var(--text2);
+
+}
+
+body.dark .menu a:hover{
+
+    background:#273449;
+
+}
+
+body.dark .menu a.active{
+
+    background:#4f46e5;
+    color:#fff;
+
+}
+
+/* ---------- Input ---------- */
+
+body.dark input,
+body.dark textarea,
+body.dark select{
+    background:#273449;
+    color:var(--text-primary);
+    border:1px solid var(--border);
+}
+
+body.dark input::placeholder{
+
+    color:#94a3b8;
+
+}
+
+/* ---------- Search ---------- */
+
+body.dark .search-box{
+
+    background:#273449;
+
+}
+
+body.dark .search-box input{
+
+    background:transparent;
+}
+
+/* ---------- Table ---------- */
+
+body.dark table{
+
+    background:transparent;
+
+}
+
+body.dark thead{
+
+    background:#273449;
+
+}
+
+body.dark tbody tr{
+
+    border-bottom:1px solid var(--text-primary);
+
+}
+
+body.dark tbody tr:hover{
+
+    background:#273449;
+
+}
+
+body.dark th{
+
+    color:#fff;
+
+}
+
+body.dark td{
+
+    color:#e2e8f0;
+
+}
+
+/* ---------- Buttons ---------- */
+
+body.dark button,
+body.dark .btn,
+body.dark .action-btn,
+body.dark .add-task-btn,
+body.dark .add-user-btn{
+
+    color:#fff;
+
+}
+
+/* ---------- Filter ---------- */
+
+body.dark .filter-chip{
+
+    background:#273449;
+    color:#fff;
+    border:1px solid var(--text-secondary);
+
+}
+
+body.dark .filter-chip span{
+
+    color:#fff;
+
+}
+
+body.dark .filter-chip.active{
+
+    background:#4f46e5;
+
+}
+
+body.dark .filter-chip.success{
+
+    background:#16a34a;
+
+}
+
+body.dark .filter-chip.warning{
+
+    background:#f59e0b;
+
+}
+
+body.dark .filter-chip.danger{
+
+    background:#dc2626;
+
+}
+
+/* ---------- Notification ---------- */
+
+body.dark .notification-dropdown{
+
+    background:#1e293b;
+    border:1px solid var(--text-primary);
+
+}
+
+body.dark .notification-item{
+
+    color:#fff;
+
+}
+
+body.dark .notification-item:hover{
+
+    background:#273449;
+
+}
+
+/* ---------- Chart ---------- */
+
+body.dark canvas{
+
+    background:transparent;
+
+}
+/* ===== Notification icon màu trong Dark Mode ===== */
+
+body.dark .notif-item.danger i{
+    color:#ef4444 !important;
+}
+
+body.dark .notif-item.warning i{
+    color:#f59e0b !important;
+}
+
+body.dark .notif-item.success i{
+    color:#22c55e !important;
+}
+/* ---------- Giữ nguyên màu Badge & Nút như Light Mode ---------- */
+
+body.dark .role-admin{
+    background:#ffe4e6 !important;
+    color:#e11d48 !important;
+}
+
+body.dark .role-user{
+    background:#d1fae5 !important;
+    color:#059669 !important;
+}
+
+body.dark .edit-btn{
+    background:#eef2ff !important;
+    color:#4338ca !important;
+}
+
+body.dark .edit-btn:hover{
+    background:#dfe4fd !important;
+    color:#4338ca !important;
+}
+
+body.dark .delete-btn{
+    background:#ffe4e6 !important;
+    color:#e11d48 !important;
+}
+
+body.dark .delete-btn:hover{
+    background:#fecdd3 !important;
+    color:#e11d48 !important;
+}
+body.dark .user-table thead th{
+    background:#273449 !important;
+    color:#fff !important;
+}

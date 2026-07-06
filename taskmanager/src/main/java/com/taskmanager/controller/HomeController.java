@@ -26,6 +26,14 @@ public class HomeController {
         long doingTasks = taskRepository.countByStatus("Đang làm");
         long todoTasks = taskRepository.countByStatus("Chưa làm");
 
+        System.out.println("=================================");
+        System.out.println("Total Tasks : " + totalTasks);
+        System.out.println("Total Users : " + totalUsers);
+        System.out.println("Completed   : " + completedTasks);
+        System.out.println("Doing       : " + doingTasks);
+        System.out.println("Todo        : " + todoTasks);
+        System.out.println("=================================");
+
         model.addAttribute("totalTasks", totalTasks);
         model.addAttribute("totalUsers", totalUsers);
         model.addAttribute("completedTasks", completedTasks);

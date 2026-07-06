@@ -15,7 +15,10 @@
 
     <!-- CSS -->
     <link rel="stylesheet" th:href="@{/css/tasks.css}">
+
+    <link rel="stylesheet" th:href="@{/css/dark.css}">
 </head>
+<script th:src="@{/js/theme.js}"></script>
 <body> 
 
 <div class="app">
@@ -78,6 +81,11 @@
     <main class="main">
         <!-- TOPBAR -->
         <div class="topbar">
+
+            <button id="themeBtn" class="theme-btn">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+
             <div class="welcome">
                 <h1>Danh Sách Công Việc</h1>
                 <p>Quản lý, theo dõi và cập nhật toàn bộ công việc trong hệ thống.</p>
