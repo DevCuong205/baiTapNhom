@@ -54,7 +54,7 @@ Cập nhật:
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/taskmanager
 spring.datasource.username=root
-spring.datasource.password=your_password
+spring.datasource.password=241005
 ```
 
 ### Chạy project
