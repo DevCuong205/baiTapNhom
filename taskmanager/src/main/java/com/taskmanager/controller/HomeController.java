@@ -1,5 +1,8 @@
 package com.taskmanager.controller;
 
+import com.taskmanager.entity.Task;
+import java.time.LocalDate;
+import java.util.List;
 import com.taskmanager.entity.User;
 import com.taskmanager.repository.TaskRepository;
 import com.taskmanager.repository.UserRepository;
@@ -35,6 +38,28 @@ public class HomeController {
         long completedTasks;
         long doingTasks;
         long todoTasks;
+
+        LocalDate today = LocalDate.now();
+
+        LocalDate limitDate = today.plusMonths(1);
+
+
+        List<Task> upcomingTasks =
+                taskRepository.findUpcomingTasks(
+                        today,
+                        limitDate
+                );
+
+        model.addAttribute("upcomingTasks", upcomingTasks);
+
+        List<Task> overdueTasks =
+                taskRepository.findByDeadlineBeforeAndStatusNot(
+                        java.time.LocalDate.now(),
+                        "Hoàn thành"
+                );
+
+
+        model.addAttribute("overdueTasks", overdueTasks);
 
 
         /*
@@ -129,7 +154,6 @@ public class HomeController {
                 "loginUser",
                 loginUser
         );
-
 
         return "index";
     }

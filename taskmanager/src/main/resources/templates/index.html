@@ -293,6 +293,114 @@
             </div>
         </section>
 
+        <div class="alert-warning"
+             th:if="${!#lists.isEmpty(overdueTasks)}">
+
+
+            ⚠️ Có
+            <b th:text="${overdueTasks.size()}"></b>
+            công việc đã quá hạn!
+
+
+        </div>
+
+        <section class="dashboard-panel">
+
+            <div class="panel-header">
+
+                <h3>
+                    <i class="fa-solid fa-clock"></i>
+                    Công việc sắp đến hạn
+                </h3>
+
+            </div>
+
+
+            <table class="task-table">
+
+                <thead>
+
+                <tr>
+                    <th>Tên công việc</th>
+                    <th>Người thực hiện</th>
+                    <th>Deadline</th>
+                    <th>Trạng thái</th>
+                </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                <tr th:each="task : ${upcomingTasks}">
+
+                    <td th:text="${task.title}">
+                        Task
+                    </td>
+
+
+                    <td th:text="${task.user != null ? task.user.fullname : 'Chưa gán'}">
+                        User
+                    </td>
+
+
+                    <td>
+
+                <span th:text="${#temporals.format(task.deadline,'dd/MM/yyyy')}">
+                </span>
+
+                    </td>
+
+
+                    <td>
+
+
+                <span class="status-badge done"
+                      th:if="${task.status=='Hoàn thành'}">
+
+                    Hoàn thành
+
+                </span>
+
+
+                        <span class="status-badge doing"
+                              th:if="${task.status=='Đang làm'}">
+
+                    Đang làm
+
+                </span>
+
+
+                        <span class="status-badge todo"
+                              th:if="${task.status=='Chưa làm'}">
+
+                    Chưa làm
+
+                </span>
+
+
+                    </td>
+
+
+                </tr>
+
+
+                <tr th:if="${#lists.isEmpty(upcomingTasks)}">
+
+                    <td colspan="4">
+                        Không có công việc sắp đến hạn
+                    </td>
+
+                </tr>
+
+
+                </tbody>
+
+            </table>
+
+        </section>
+
         <!-- QUICK INFO -->
         <section class="bottom-grid">
             <div class="panel fade-in-item">
