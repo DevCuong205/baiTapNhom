@@ -196,7 +196,7 @@ public class UserController {
         return "user-form";
     }
 
-    @GetMapping("/users/delete/{id}")
+    @PostMapping("/users/delete/{id}")
     public String deleteUser(@PathVariable Long id,
                              HttpSession session) {
 

@@ -6,31 +6,132 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
-
 public interface TaskRepository extends JpaRepository<Task, Long> {
+
 
     long countByStatus(String status);
 
-    Page<Task> findByTitleContainingIgnoreCase(String keyword, Pageable pageable);
 
-    Page<Task> findByUser(User user, Pageable pageable);
+    // ADMIN tìm kiếm
+    Page<Task> findByTitleContainingIgnoreCase(
+            String keyword,
+            Pageable pageable
+    );
 
-    Page<Task> findByUserAndTitleContainingIgnoreCase(User user, String keyword, Pageable pageable);
 
-    Page<Task> findByStatus(String status, Pageable pageable);
+    // ADMIN lọc
+    Page<Task> findByStatus(
+            String status,
+            Pageable pageable
+    );
 
-    Page<Task> findByPriority(String priority, Pageable pageable);
 
-    Page<Task> findByStatusAndPriority(String status,
-                                       String priority,
-                                       Pageable pageable);
+    Page<Task> findByPriority(
+            String priority,
+            Pageable pageable
+    );
 
-    List<Task> findAllByOrderByDeadlineAsc();
 
-    List<Task> findAllByOrderByDeadlineDesc();
+    Page<Task> findByStatusAndPriority(
+            String status,
+            String priority,
+            Pageable pageable
+    );
+
+
+    // ADMIN tìm kiếm + lọc
+    Page<Task> findByTitleContainingIgnoreCaseAndStatus(
+            String keyword,
+            String status,
+            Pageable pageable
+    );
+
+
+    Page<Task> findByTitleContainingIgnoreCaseAndPriority(
+            String keyword,
+            String priority,
+            Pageable pageable
+    );
+
+
+    Page<Task> findByTitleContainingIgnoreCaseAndStatusAndPriority(
+            String keyword,
+            String status,
+            String priority,
+            Pageable pageable
+    );
+
+
+
+    // USER
+    Page<Task> findByUser(
+            User user,
+            Pageable pageable
+    );
+
+
+    Page<Task> findByUserAndTitleContainingIgnoreCase(
+            User user,
+            String keyword,
+            Pageable pageable
+    );
+
+
+    Page<Task> findByUserAndStatus(
+            User user,
+            String status,
+            Pageable pageable
+    );
+
+
+    Page<Task> findByUserAndPriority(
+            User user,
+            String priority,
+            Pageable pageable
+    );
+
+
+    Page<Task> findByUserAndStatusAndPriority(
+            User user,
+            String status,
+            String priority,
+            Pageable pageable
+    );
+
+
 
     long countByUser(User user);
 
-    long countByUserAndStatus(User user, String status);
+
+    long countByUserAndStatus(
+            User user,
+            String status
+    );
+
+    // USER FILTER + SEARCH
+
+    Page<Task> findByUserAndTitleContainingIgnoreCaseAndStatusAndPriority(
+            User user,
+            String keyword,
+            String status,
+            String priority,
+            Pageable pageable
+    );
+
+
+    Page<Task> findByUserAndTitleContainingIgnoreCaseAndStatus(
+            User user,
+            String keyword,
+            String status,
+            Pageable pageable
+    );
+
+
+    Page<Task> findByUserAndTitleContainingIgnoreCaseAndPriority(
+            User user,
+            String keyword,
+            String priority,
+            Pageable pageable
+    );
+
 }

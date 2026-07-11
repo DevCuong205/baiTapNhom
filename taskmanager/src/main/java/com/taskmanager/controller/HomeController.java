@@ -1,7 +1,9 @@
 package com.taskmanager.controller;
 
+import com.taskmanager.entity.User;
 import com.taskmanager.repository.TaskRepository;
 import com.taskmanager.repository.UserRepository;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,29 +18,118 @@ public class HomeController {
     @Autowired
     private UserRepository userRepository;
 
+
     @GetMapping("/")
-    public String home(Model model) {
+    public String home(Model model, HttpSession session) {
 
-        long totalTasks = taskRepository.count();
-        long totalUsers = userRepository.count();
 
-        long completedTasks = taskRepository.countByStatus("Hoàn thành");
-        long doingTasks = taskRepository.countByStatus("Đang làm");
-        long todoTasks = taskRepository.countByStatus("Chưa làm");
+        User loginUser = (User) session.getAttribute("user");
 
-        System.out.println("=================================");
-        System.out.println("Total Tasks : " + totalTasks);
-        System.out.println("Total Users : " + totalUsers);
-        System.out.println("Completed   : " + completedTasks);
-        System.out.println("Doing       : " + doingTasks);
-        System.out.println("Todo        : " + todoTasks);
-        System.out.println("=================================");
 
-        model.addAttribute("totalTasks", totalTasks);
-        model.addAttribute("totalUsers", totalUsers);
-        model.addAttribute("completedTasks", completedTasks);
-        model.addAttribute("doingTasks", doingTasks);
-        model.addAttribute("todoTasks", todoTasks);
+        if(loginUser == null){
+            return "redirect:/login";
+        }
+
+
+        long totalTasks;
+        long completedTasks;
+        long doingTasks;
+        long todoTasks;
+
+
+        /*
+            ADMIN:
+            Xem toàn bộ hệ thống
+        */
+        if("ADMIN".equals(loginUser.getRole())){
+
+
+            totalTasks = taskRepository.count();
+
+            completedTasks =
+                    taskRepository.countByStatus("Hoàn thành");
+
+            doingTasks =
+                    taskRepository.countByStatus("Đang làm");
+
+            todoTasks =
+                    taskRepository.countByStatus("Chưa làm");
+
+
+            model.addAttribute(
+                    "totalUsers",
+                    userRepository.count()
+            );
+
+
+        }
+
+
+        /*
+            USER:
+            Chỉ xem task của mình
+        */
+        else {
+
+
+            totalTasks =
+                    taskRepository.countByUser(loginUser);
+
+
+            completedTasks =
+                    taskRepository.countByUserAndStatus(
+                            loginUser,
+                            "Hoàn thành"
+                    );
+
+
+            doingTasks =
+                    taskRepository.countByUserAndStatus(
+                            loginUser,
+                            "Đang làm"
+                    );
+
+
+            todoTasks =
+                    taskRepository.countByUserAndStatus(
+                            loginUser,
+                            "Chưa làm"
+                    );
+
+
+        }
+
+
+
+        model.addAttribute(
+                "totalTasks",
+                totalTasks
+        );
+
+
+        model.addAttribute(
+                "completedTasks",
+                completedTasks
+        );
+
+
+        model.addAttribute(
+                "doingTasks",
+                doingTasks
+        );
+
+
+        model.addAttribute(
+                "todoTasks",
+                todoTasks
+        );
+
+
+        model.addAttribute(
+                "loginUser",
+                loginUser
+        );
+
 
         return "index";
     }

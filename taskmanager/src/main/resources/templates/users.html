@@ -195,24 +195,37 @@
 
                                 <a th:href="@{'/users/edit/' + ${u.id}}"
                                    class="action-btn edit-btn">
+
                                     <i class="fa-solid fa-pen"></i>
                                     Sửa
-                                </a>
-
-                                <a th:href="@{'/users/delete/' + ${u.id}}"
-                                   class="action-btn delete-btn js-delete-btn"
-                                   th:attr="data-name=${u.fullname}">
-
-                                    <i class="fa-solid fa-trash"></i>
-                                    Xóa
 
                                 </a>
+
+
+                                <form th:action="@{'/users/delete/' + ${u.id}}"
+                                      method="post"
+                                      style="display:inline"
+                                      onsubmit="return confirm('Bạn có chắc muốn xóa người dùng này?')">
+
+
+                                    <button type="submit"
+                                            class="action-btn delete-btn">
+
+                                        <i class="fa-solid fa-trash"></i>
+                                        Xóa
+
+                                    </button>
+
+
+                                </form>
 
                             </div>
 
+
                             <span th:unless="${session.user.role == 'ADMIN'}">
-                                        Không có quyền
-                        </span>
+                                              Không có quyền
+                            </span>
+
                         </td>
                     </tr>
 

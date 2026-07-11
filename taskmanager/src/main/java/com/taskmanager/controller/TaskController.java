@@ -45,36 +45,106 @@ public class TaskController {
 
         Page<Task> taskPage;
 
+
+        boolean hasKeyword = keyword != null && !keyword.isBlank();
+        boolean hasStatus = status != null && !status.isBlank();
+        boolean hasPriority = priority != null && !priority.isBlank();
+
+
         if ("ADMIN".equals(loginUser.getRole())) {
 
-            if (keyword != null && !keyword.isBlank()) {
-                taskPage = taskRepository.findByTitleContainingIgnoreCase(keyword, pageable);
+            if (hasStatus && hasPriority) {
+
+                taskPage = taskRepository.findByStatusAndPriority(
+                        status,
+                        priority,
+                        pageable
+                );
+
+            } else if (hasStatus) {
+
+                taskPage = taskRepository.findByStatus(
+                        status,
+                        pageable
+                );
+
+            } else if (hasPriority) {
+
+                taskPage = taskRepository.findByPriority(
+                        priority,
+                        pageable
+                );
+
+            } else if (hasKeyword) {
+
+                taskPage = taskRepository.findByTitleContainingIgnoreCase(
+                        keyword,
+                        pageable
+                );
+
             } else {
+
                 taskPage = taskRepository.findAll(pageable);
+
             }
 
         } else {
 
-            if (keyword != null && !keyword.isBlank()) {
-                taskPage = taskRepository.findByUserAndTitleContainingIgnoreCase(loginUser, keyword, pageable);
+
+            if (hasKeyword && hasStatus && hasPriority) {
+
+                taskPage = taskRepository
+                        .findByUserAndTitleContainingIgnoreCaseAndStatusAndPriority(
+                                loginUser,
+                                keyword,
+                                status,
+                                priority,
+                                pageable
+                        );
+
+
+            } else if (hasKeyword && hasStatus) {
+
+                taskPage = taskRepository
+                        .findByUserAndTitleContainingIgnoreCaseAndStatus(
+                                loginUser,
+                                keyword,
+                                status,
+                                pageable
+                        );
+
+
+            } else if (hasKeyword && hasPriority) {
+
+                taskPage = taskRepository
+                        .findByUserAndTitleContainingIgnoreCaseAndPriority(
+                                loginUser,
+                                keyword,
+                                priority,
+                                pageable
+                        );
+
+
+            } else if (hasKeyword) {
+
+                taskPage = taskRepository
+                        .findByUserAndTitleContainingIgnoreCase(
+                                loginUser,
+                                keyword,
+                                pageable
+                        );
+
+
             } else {
+
                 taskPage = taskRepository.findByUser(loginUser, pageable);
+
             }
+
         }
+
 
         List<Task> tasks = taskPage.getContent();
-
-        if (status != null && !status.isBlank()) {
-            tasks = tasks.stream()
-                    .filter(t -> status.equalsIgnoreCase(t.getStatus()))
-                    .toList();
-        }
-
-        if (priority != null && !priority.isBlank()) {
-            tasks = tasks.stream()
-                    .filter(t -> priority.equalsIgnoreCase(t.getPriority()))
-                    .toList();
-        }
 
         model.addAttribute("tasks", tasks);
         model.addAttribute("totalTasks", taskPage.getTotalElements());
@@ -87,17 +157,57 @@ public class TaskController {
         model.addAttribute("status", status);
         model.addAttribute("priority", priority);
 
-        model.addAttribute("todoTasks",
-                taskRepository.countByStatus("Chưa làm"));
+        if ("ADMIN".equals(loginUser.getRole())) {
 
-        model.addAttribute("doingTasks",
-                taskRepository.countByStatus("Đang làm"));
+            model.addAttribute(
+                    "todoTasks",
+                    taskRepository.countByStatus("Chưa làm")
+            );
 
-        model.addAttribute("completedTasks",
-                taskRepository.countByStatus("Hoàn thành"));
+            model.addAttribute(
+                    "doingTasks",
+                    taskRepository.countByStatus("Đang làm")
+            );
+
+            model.addAttribute(
+                    "completedTasks",
+                    taskRepository.countByStatus("Hoàn thành")
+            );
+
+        }
+        else {
+
+            model.addAttribute(
+                    "todoTasks",
+                    taskRepository.countByUserAndStatus(
+                            loginUser,
+                            "Chưa làm"
+                    )
+            );
+
+
+            model.addAttribute(
+                    "doingTasks",
+                    taskRepository.countByUserAndStatus(
+                            loginUser,
+                            "Đang làm"
+                    )
+            );
+
+
+            model.addAttribute(
+                    "completedTasks",
+                    taskRepository.countByUserAndStatus(
+                            loginUser,
+                            "Hoàn thành"
+                    )
+            );
+
+        }
 
         return "tasks";
     }
+
     @GetMapping("/tasks/new")
     public String showForm(Model model, HttpSession session) {
 
@@ -195,34 +305,23 @@ public class TaskController {
         return "task-form";
     }
 
-    @PostMapping("/tasks/delete/{id}")
-    public String deleteTask(@PathVariable Long id,
-                             HttpSession session) {
+    @PostMapping("/delete/{id}")
+    public String deleteTask(
+            @PathVariable Long id,
+            HttpSession session
+    ){
 
-        User loginUser = (User) session.getAttribute("user");
+        User user = (User) session.getAttribute("user");
 
-        if (loginUser == null) {
-            return "redirect:/login";
+        // chỉ ADMIN được xóa
+        if(user == null || !"ADMIN".equals(user.getRole())){
+
+            return "redirect:/tasks?error=no_permission";
         }
 
-        Task task = taskRepository.findById(id).orElse(null);
-
-        if (task == null) {
-            return "redirect:/tasks";
-        }
-
-        // USER chỉ được xóa task của mình
-        if ("USER".equals(loginUser.getRole())) {
-
-            if (task.getUser() == null ||
-                    !task.getUser().getId().equals(loginUser.getId())) {
-
-                return "redirect:/tasks";
-            }
-        }
-
-        taskRepository.delete(task);
+        taskRepository.deleteById(id);
 
         return "redirect:/tasks";
+
     }
 }

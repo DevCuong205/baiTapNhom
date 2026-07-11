@@ -281,3 +281,45 @@ body.dark .user-table thead th{
     background:#273449 !important;
     color:#fff !important;
 }
+/* ---------- Task Form Dark Mode ---------- */
+
+body.dark .form-card,
+body.dark .task-form-container{
+
+    background:#1e293b;
+    color:#fff;
+
+}
+
+
+body.dark .form-group label{
+
+    color:#f8fafc;
+
+}
+
+
+body.dark input,
+body.dark textarea,
+body.dark select{
+
+    background:#273449 !important;
+    color:#f8fafc !important;
+
+}
+
+
+body.dark select option{
+
+    background:#1e293b;
+    color:#fff;
+
+}
+
+
+body.dark input::placeholder,
+body.dark textarea::placeholder{
+
+    color:#94a3b8;
+
+}
