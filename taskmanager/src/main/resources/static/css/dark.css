@@ -395,3 +395,24 @@ body.dark .user-table tbody tr{
 body.dark .user-table tbody tr:hover{
     background:#273449 !important;
 }
+/* ===== Select Dropdown Dark ===== */
+
+body.dark select {
+    background: #111827 !important;
+    color: #f8fafc !important;
+}
+
+body.dark select option {
+    background: #111827 !important;
+    color: #f8fafc !important;
+}
+
+body.dark select option:checked {
+    background: #4f46e5 !important;
+    color: #fff !important;
+}
+
+body.dark select option:hover {
+    background: #4338ca !important;
+    color: #fff !important;
+}

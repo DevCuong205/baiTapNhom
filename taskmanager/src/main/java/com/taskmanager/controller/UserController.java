@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.File;
 
@@ -71,7 +72,8 @@ public class UserController {
     @PostMapping("/users/save")
     public String saveUser(@ModelAttribute User user,
                            @RequestParam(value = "avatarFile", required = false) MultipartFile avatarFile,
-                           HttpSession session) {
+                           HttpSession session,
+                           RedirectAttributes ra) {
 
         if (!isAdmin(session)) {
             return "redirect:/";
@@ -155,6 +157,8 @@ public class UserController {
                 }
             }
 
+            boolean isNew = (user.getId() == null);
+
             User savedUser = userRepository.save(user);
 
             User sessionUser = (User) session.getAttribute("user");
@@ -163,6 +167,12 @@ public class UserController {
                     sessionUser.getId().equals(savedUser.getId())) {
 
                 session.setAttribute("user", savedUser);
+            }
+
+            if (isNew) {
+                ra.addFlashAttribute("success", "Thêm người dùng thành công!");
+            } else {
+                ra.addFlashAttribute("success", "Cập nhật người dùng thành công!");
             }
 
         } catch (Exception e) {
@@ -198,7 +208,8 @@ public class UserController {
 
     @PostMapping("/users/delete/{id}")
     public String deleteUser(@PathVariable Long id,
-                             HttpSession session) {
+                             HttpSession session,
+                             RedirectAttributes ra) {
 
         if (!isAdmin(session)) {
             return "redirect:/";
@@ -230,6 +241,8 @@ public class UserController {
         }
 
         userRepository.delete(user);
+
+        ra.addFlashAttribute("success", "Xóa người dùng thành công!");
 
         return "redirect:/users";
     }

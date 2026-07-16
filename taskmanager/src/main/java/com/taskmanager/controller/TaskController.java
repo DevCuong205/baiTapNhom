@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -226,7 +227,8 @@ public class TaskController {
     @PostMapping("/tasks/save")
     public String saveTask(@ModelAttribute Task task,
                            @RequestParam(required = false) Long userId,
-                           HttpSession session) {
+                           HttpSession session,
+                           RedirectAttributes ra) {
 
         User loginUser = (User) session.getAttribute("user");
 
@@ -267,7 +269,15 @@ public class TaskController {
 
         task.setUpdatedAt(LocalDateTime.now());
 
+        boolean isNew = task.getId() == null;
+
         taskRepository.save(task);
+
+        if(isNew){
+            ra.addFlashAttribute("success","Thêm công việc thành công!");
+        }else{
+            ra.addFlashAttribute("success","Cập nhật công việc thành công!");
+        }
 
         return "redirect:/tasks";
     }
@@ -305,23 +315,22 @@ public class TaskController {
         return "task-form";
     }
 
-    @PostMapping("/delete/{id}")
+    @PostMapping("/tasks/delete/{id}")
     public String deleteTask(
             @PathVariable Long id,
-            HttpSession session
-    ){
+            HttpSession session,
+            RedirectAttributes ra) {
 
         User user = (User) session.getAttribute("user");
 
-        // chỉ ADMIN được xóa
-        if(user == null || !"ADMIN".equals(user.getRole())){
-
+        if (user == null || !"ADMIN".equals(user.getRole())) {
             return "redirect:/tasks?error=no_permission";
         }
 
         taskRepository.deleteById(id);
 
-        return "redirect:/tasks";
+        ra.addFlashAttribute("success", "Xóa công việc thành công!");
 
+        return "redirect:/tasks";
     }
 }

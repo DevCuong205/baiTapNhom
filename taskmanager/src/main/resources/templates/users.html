@@ -290,5 +290,29 @@
         </section>
     </main>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script th:if="${success}">
+    Swal.fire({
+        icon: 'success',
+        title: 'Thành công',
+        text: '[[${success}]]',
+        timer: 2500,
+        showConfirmButton: false,
+        toast: true,
+        position: 'top-end'
+    });
+</script>
+
+<script th:if="${error}">
+    Swal.fire({
+        icon: 'error',
+        title: 'Lỗi',
+        text: '[[${error}]]',
+        timer: 2500,
+        showConfirmButton: false,
+        toast: true,
+        position: 'top-end'
+    });
+</script>
 </body>
 </html>
