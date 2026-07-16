@@ -41,25 +41,30 @@ public class HomeController {
 
         LocalDate today = LocalDate.now();
 
-        LocalDate limitDate = today.plusMonths(1);
+        LocalDate after30Days = today.plusDays(30);
 
-
+// Công việc sắp hết hạn (30 ngày tới)
         List<Task> upcomingTasks =
-                taskRepository.findUpcomingTasks(
+                taskRepository.findByDeadlineBetweenAndStatusNot(
                         today,
-                        limitDate
-                );
-
-        model.addAttribute("upcomingTasks", upcomingTasks);
-
-        List<Task> overdueTasks =
-                taskRepository.findByDeadlineBeforeAndStatusNot(
-                        java.time.LocalDate.now(),
+                        after30Days,
                         "Hoàn thành"
                 );
 
+// Công việc quá hạn
+        List<Task> overdueTasks =
+                taskRepository.findByDeadlineBeforeAndStatusNot(
+                        today,
+                        "Hoàn thành"
+                );
 
+// Tổng số task chưa hoàn thành
+        long unCompletedTasks =
+                taskRepository.countByStatusNot("Hoàn thành");
+
+        model.addAttribute("upcomingTasks", upcomingTasks);
         model.addAttribute("overdueTasks", overdueTasks);
+        model.addAttribute("unCompletedTasks", unCompletedTasks);
 
 
         /*

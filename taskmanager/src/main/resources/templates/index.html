@@ -113,42 +113,71 @@
                 </form>
 
                 <!-- Notification -->
-                <div class="notif-wrapper">
+                <div class="notification">
 
-                    <button class="icon-btn" id="notifBtn" type="button">
-                        <i class="fa-regular fa-bell"></i>
+                    <button class="notification-btn" id="notificationBtn">
 
-                        <span class="badge"
-                              th:text="${todoTasks}">
-                    0
-                </span>
+                        <i class="fa-solid fa-bell"></i>
+
+                        <span class="notification-count"
+                              th:text="${overdueTasks.size()+upcomingTasks.size()}">
+                              0
+                        </span>
+
                     </button>
 
-                    <div class="notif-dropdown" id="notifDropdown">
+                    <div class="notification-dropdown" id="notificationDropdown">
 
-                        <div class="notif-title">
-                            Thông báo
+                        <h3>🔔 Thông báo</h3>
+
+                        <!-- Quá hạn -->
+                        <div th:if="${!#lists.isEmpty(overdueTasks)}">
+
+                            <p class="notify-title danger">
+                                Công việc quá hạn
+                            </p>
+
+                            <div th:each="task : ${overdueTasks}"
+                                 class="notif-item danger">
+
+                                <i class="fa-solid fa-circle-exclamation"></i>
+
+                                <span th:text="${task.title}"></span>
+
+                            </div>
+
                         </div>
 
-                        <div class="notif-item">
-                            <i class="fa-solid fa-circle-exclamation text-red"></i>
-                            Còn
-                            <b th:text="${todoTasks}"></b>
-                            công việc chưa làm
+                        <!-- Sắp hết hạn -->
+                        <div th:if="${!#lists.isEmpty(upcomingTasks)}">
+
+                            <p class="notify-title warning">
+                                Sắp hết hạn (30 ngày)
+                            </p>
+
+                            <div th:each="task : ${upcomingTasks}"
+                                 class="notif-item warning">
+
+                                <i class="fa-solid fa-clock"></i>
+
+                                <span th:text="${task.title}"></span>
+
+                            </div>
+
                         </div>
 
-                        <div class="notif-item">
-                            <i class="fa-solid fa-spinner text-yellow"></i>
-                            Đang xử lý
-                            <b th:text="${doingTasks}"></b>
-                            công việc
-                        </div>
+                        <hr>
 
-                        <div class="notif-item">
-                            <i class="fa-solid fa-circle-check text-green"></i>
-                            Hoàn thành
-                            <b th:text="${completedTasks}"></b>
-                            công việc
+                        <div class="notif-item success">
+
+                            <i class="fa-solid fa-list-check"></i>
+
+                            <span>
+                Còn
+                <b th:text="${unCompletedTasks}"></b>
+                công việc chưa hoàn thành
+            </span>
+
                         </div>
 
                     </div>
@@ -293,113 +322,114 @@
             </div>
         </section>
 
-        <div class="alert-warning"
-             th:if="${!#lists.isEmpty(overdueTasks)}">
+        <section class="panel deadline-panel">
 
+            <div class="panel-title">
+                <div>
+                    <h3>
+                        <i class="fa-solid fa-clock text-warning"></i>
+                        Công việc sắp đến hạn
+                    </h3>
+                    <p>Các công việc cần hoàn thành trong vài ngày tới</p>
+                </div>
 
-            ⚠️ Có
-            <b th:text="${overdueTasks.size()}"></b>
-            công việc đã quá hạn!
+                <span class="deadline-count warning"
+                      th:text="${#lists.size(upcomingTasks)} + ' công việc'">
+        </span>
+            </div>
 
+            <div class="deadline-list">
 
-        </div>
+                <div class="deadline-item"
+                     th:each="task : ${upcomingTasks}">
 
-        <section class="dashboard-panel">
+                    <div class="deadline-icon warning">
+                        <i class="fa-solid fa-hourglass-half"></i>
+                    </div>
 
-            <div class="panel-header">
+                    <div class="deadline-content">
+                        <h4 th:text="${task.title}"></h4>
+                        <p>
+                            <i class="fa-solid fa-user"></i>
+                            <span th:text="${task.user.fullname}"></span>
+                        </p>
+                    </div>
 
-                <h3>
-                    <i class="fa-solid fa-clock"></i>
-                    Công việc sắp đến hạn
-                </h3>
+                    <div class="deadline-right">
+                        <div class="deadline-date"
+                             th:text="${#temporals.format(task.deadline,'dd/MM/yyyy')}">
+                        </div>
+
+                        <span class="deadline-badge warning">
+                    Sắp đến hạn
+                </span>
+
+                    </div>
+
+                </div>
 
             </div>
 
-
-            <table class="task-table">
-
-                <thead>
-
-                <tr>
-                    <th>Tên công việc</th>
-                    <th>Người thực hiện</th>
-                    <th>Deadline</th>
-                    <th>Trạng thái</th>
-                </tr>
-
-                </thead>
+        </section>
 
 
-                <tbody>
+        <section class="panel deadline-panel">
 
+            <div class="panel-title">
+                <div>
+                    <h3>
+                        <i class="fa-solid fa-triangle-exclamation text-danger"></i>
+                        Công việc quá hạn
+                    </h3>
+                    <p>Theo dõi các công việc cần ưu tiên xử lý</p>
+                </div>
 
-                <tr th:each="task : ${upcomingTasks}">
+                <span class="deadline-count"
+                      th:text="${#lists.size(overdueTasks)} + ' công việc'">
+            0 công việc
+        </span>
+            </div>
 
-                    <td th:text="${task.title}">
-                        Task
-                    </td>
+            <div class="deadline-list">
 
+                <div class="deadline-item"
+                     th:each="task : ${overdueTasks}">
 
-                    <td th:text="${task.user != null ? task.user.fullname : 'Chưa gán'}">
-                        User
-                    </td>
+                    <div class="deadline-icon">
+                        <i class="fa-solid fa-file-circle-exclamation"></i>
+                    </div>
 
+                    <div class="deadline-content">
 
-                    <td>
+                        <h4 th:text="${task.title}">
+                            Tên công việc
+                        </h4>
 
-                <span th:text="${#temporals.format(task.deadline,'dd/MM/yyyy')}">
+                        <p>
+                            <i class="fa-solid fa-user"></i>
+                            <span th:text="${task.user.fullname}"></span>
+                        </p>
+
+                    </div>
+
+                    <div class="deadline-right">
+
+                        <div class="deadline-date"
+                             th:text="${#temporals.format(task.deadline,'dd/MM/yyyy')}">
+                        </div>
+
+                        <span class="deadline-badge danger">
+                    Quá hạn
                 </span>
 
-                    </td>
+                    </div>
 
+                </div>
 
-                    <td>
-
-
-                <span class="status-badge done"
-                      th:if="${task.status=='Hoàn thành'}">
-
-                    Hoàn thành
-
-                </span>
-
-
-                        <span class="status-badge doing"
-                              th:if="${task.status=='Đang làm'}">
-
-                    Đang làm
-
-                </span>
-
-
-                        <span class="status-badge todo"
-                              th:if="${task.status=='Chưa làm'}">
-
-                    Chưa làm
-
-                </span>
-
-
-                    </td>
-
-
-                </tr>
-
-
-                <tr th:if="${#lists.isEmpty(upcomingTasks)}">
-
-                    <td colspan="4">
-                        Không có công việc sắp đến hạn
-                    </td>
-
-                </tr>
-
-
-                </tbody>
-
-            </table>
+            </div>
 
         </section>
+
 
         <!-- QUICK INFO -->
         <section class="bottom-grid">
@@ -551,24 +581,25 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // ===== Notification =====
-    const notifBtn = document.getElementById("notifBtn");
-    const dropdown = document.getElementById("notifDropdown");
+    const btn = document.getElementById("notificationBtn");
+const box = document.getElementById("notificationDropdown");
 
-    if (notifBtn && dropdown) {
+if (btn && box) {
 
-        notifBtn.addEventListener("click", function (e) {
-            e.stopPropagation();
-            dropdown.classList.toggle("show");
-        });
+    btn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        box.classList.toggle("show");
+    });
 
-        document.addEventListener("click", function () {
-            dropdown.classList.remove("show");
-        });
+    document.addEventListener("click", function () {
+        box.classList.remove("show");
+    });
 
-        dropdown.addEventListener("click", function (e) {
-            e.stopPropagation();
-        });
-    }
+    box.addEventListener("click", function (e) {
+        e.stopPropagation();
+    });
+
+}
 
     // ===== Fade In =====
     document.querySelectorAll(".fade-in-item").forEach((item, index) => {

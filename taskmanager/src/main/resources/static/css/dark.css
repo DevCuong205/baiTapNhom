@@ -1,8 +1,7 @@
-/* ===============================
-   DARK MODE - TASK MANAGER
-================================== */
 
-/* ---------- Theme ---------- */
+/* =========================
+   DARK MODE - TASK MANAGER
+========================= */
 
 body.dark{
     --bg:#0f172a;
@@ -19,7 +18,7 @@ body.dark{
     color:var(--text-primary);
 }
 
-/* ---------- Layout ---------- */
+/* Layout */
 
 body.dark .main{
     background:var(--bg);
@@ -29,20 +28,17 @@ body.dark .sidebar{
     background:#111827;
 }
 
-body.dark .profile-card,
 body.dark .panel,
-body.dark .overview-banner,
-body.dark .topbar,
-body.dark .table-wrapper,
 body.dark .card,
-body.dark .modal-content{
-
+body.dark .profile-card,
+body.dark .overview-banner,
+body.dark .modal-content,
+body.dark .table-wrapper{
     background:var(--surface);
     border:1px solid var(--border);
-
 }
 
-/* ---------- Text ---------- */
+/* Text */
 
 body.dark h1,
 body.dark h2,
@@ -55,271 +51,347 @@ body.dark h6{
 
 body.dark p,
 body.dark span,
-body.dark td,
-body.dark th,
 body.dark label,
 body.dark small,
 body.dark li{
-
-    color:var(--text2);
-
+    color:var(--text-secondary);
 }
 
-/* ---------- Menu ---------- */
+/* Menu */
 
 body.dark .menu a{
-
-    color:var(--text2);
-
+    color:var(--text-secondary);
 }
 
 body.dark .menu a:hover{
-
     background:#273449;
-
 }
 
 body.dark .menu a.active{
-
     background:#4f46e5;
     color:#fff;
-
 }
 
-/* ---------- Input ---------- */
+/* Inputs */
 
 body.dark input,
-body.dark textarea,
-body.dark select{
-    background:#273449;
-    color:var(--text-primary);
-    border:1px solid var(--border);
-}
-
-body.dark input::placeholder{
-
-    color:#94a3b8;
-
-}
-
-/* ---------- Search ---------- */
-
-body.dark .search-box{
-
-    background:#273449;
-
-}
-
-body.dark .search-box input{
-
-    background:transparent;
-}
-
-/* ---------- Table ---------- */
-
-body.dark table{
-
-    background:transparent;
-
-}
-
-body.dark thead{
-
-    background:#273449;
-
-}
-
-body.dark tbody tr{
-
-    border-bottom:1px solid var(--text-primary);
-
-}
-
-body.dark tbody tr:hover{
-
-    background:#273449;
-
-}
-
-body.dark th{
-
+body.dark select,
+body.dark textarea{
+    background:#0f172a;
     color:#fff;
-
+    border:1px solid #334155;
 }
-
-body.dark td{
-
-    color:#e2e8f0;
-
-}
-
-/* ---------- Buttons ---------- */
-
-body.dark button,
-body.dark .btn,
-body.dark .action-btn,
-body.dark .add-task-btn,
-body.dark .add-user-btn{
-
-    color:#fff;
-
-}
-
-/* ---------- Filter ---------- */
-
-body.dark .filter-chip{
-
-    background:#273449;
-    color:#fff;
-    border:1px solid var(--text-secondary);
-
-}
-
-body.dark .filter-chip span{
-
-    color:#fff;
-
-}
-
-body.dark .filter-chip.active{
-
-    background:#4f46e5;
-
-}
-
-body.dark .filter-chip.success{
-
-    background:#16a34a;
-
-}
-
-body.dark .filter-chip.warning{
-
-    background:#f59e0b;
-
-}
-
-body.dark .filter-chip.danger{
-
-    background:#dc2626;
-
-}
-
-/* ---------- Notification ---------- */
-
-body.dark .notification-dropdown{
-
-    background:#1e293b;
-    border:1px solid var(--text-primary);
-
-}
-
-body.dark .notification-item{
-
-    color:#fff;
-
-}
-
-body.dark .notification-item:hover{
-
-    background:#273449;
-
-}
-
-/* ---------- Chart ---------- */
-
-body.dark canvas{
-
-    background:transparent;
-
-}
-/* ===== Notification icon màu trong Dark Mode ===== */
-
-body.dark .notif-item.danger i{
-    color:#ef4444 !important;
-}
-
-body.dark .notif-item.warning i{
-    color:#f59e0b !important;
-}
-
-body.dark .notif-item.success i{
-    color:#22c55e !important;
-}
-/* ---------- Giữ nguyên màu Badge & Nút như Light Mode ---------- */
-
-body.dark .role-admin{
-    background:#ffe4e6 !important;
-    color:#e11d48 !important;
-}
-
-body.dark .role-user{
-    background:#d1fae5 !important;
-    color:#059669 !important;
-}
-
-body.dark .edit-btn{
-    background:#eef2ff !important;
-    color:#4338ca !important;
-}
-
-body.dark .edit-btn:hover{
-    background:#dfe4fd !important;
-    color:#4338ca !important;
-}
-
-body.dark .delete-btn{
-    background:#ffe4e6 !important;
-    color:#e11d48 !important;
-}
-
-body.dark .delete-btn:hover{
-    background:#fecdd3 !important;
-    color:#e11d48 !important;
-}
-body.dark .user-table thead th{
-    background:#273449 !important;
-    color:#fff !important;
-}
-/* ---------- Task Form Dark Mode ---------- */
-
-body.dark .form-card,
-body.dark .task-form-container{
-
-    background:#1e293b;
-    color:#fff;
-
-}
-
-
-body.dark .form-group label{
-
-    color:#f8fafc;
-
-}
-
-
-body.dark input,
-body.dark textarea,
-body.dark select{
-
-    background:#273449 !important;
-    color:#f8fafc !important;
-
-}
-
-
-body.dark select option{
-
-    background:#1e293b;
-    color:#fff;
-
-}
-
 
 body.dark input::placeholder,
 body.dark textarea::placeholder{
-
     color:#94a3b8;
+}
 
+body.dark input:focus,
+body.dark select:focus,
+body.dark textarea:focus{
+    border-color:#6366f1;
+    box-shadow:0 0 0 3px rgba(99,102,241,.25);
+}
+
+/* User Form */
+
+body.dark .input-box{
+    background:#0f172a;
+    border:1px solid #334155;
+}
+
+body.dark .input-box input,
+body.dark .input-box select,
+body.dark .input-box textarea{
+    background:transparent !important;
+    border:none !important;
+    box-shadow:none !important;
+    color:#fff !important;
+}
+
+body.dark .input-box i{
+    color:#94a3b8;
+}
+
+body.dark .avatar-upload,
+body.dark .upload-box{
+    background:#0f172a;
+    border:2px dashed #475569;
+}
+
+/* Search */
+
+body.dark .search-box{
+    background:#273449;
+    border:1px solid #334155;
+}
+
+body.dark .search-box input{
+    background:transparent;
+}
+
+/* Tables */
+
+body.dark table{
+    background:transparent;
+}
+
+body.dark thead{
+    background:#273449;
+}
+
+body.dark th{
+    color:#fff;
+}
+
+body.dark td{
+    color:#e2e8f0;
+}
+
+body.dark tbody tr{
+    border-bottom:1px solid #334155;
+}
+
+body.dark tbody tr:hover{
+    background:#273449;
+}
+
+/* Filter */
+
+body.dark .filter-chip{
+    color:#fff;
+}
+
+body.dark .filter-chip.active{
+    background:#4f46e5;
+}
+
+body.dark .filter-chip.danger{
+    background:#dc2626;
+}
+
+body.dark .filter-chip.warning{
+    background:#f59e0b;
+}
+
+body.dark .filter-chip.success{
+    background:#16a34a;
+}
+
+body.dark .filter-chip span{
+    background:rgba(255,255,255,.18);
+    color:#fff;
+}
+
+/* Notification */
+
+body.dark .notification-btn{
+    background:#273449;
+    border:1px solid #334155;
+}
+
+body.dark .notification-btn i{
+    color:#fff;
+}
+
+body.dark .notification-dropdown{
+    background:#1e293b;
+    border:1px solid #334155;
+}
+
+body.dark .notification-dropdown h3{
+    color:#fff;
+}
+
+/* Deadline */
+
+body.dark .deadline-count{
+    background:#7f1d1d;
+    color:#fecaca;
+    border:1px solid #dc2626;
+}
+
+body.dark .deadline-count.warning{
+    background:#78350f;
+    color:#fde68a;
+    border:1px solid #f59e0b;
+}
+
+/* Buttons */
+
+body.dark .btn-secondary{
+    background:#334155;
+    color:#fff;
+    border:1px solid #475569;
+}
+
+body.dark .btn-secondary:hover{
+    background:#475569;
+}
+
+/* Role Badge */
+
+body.dark .role-admin{
+    background:#ffe4e6;
+    color:#e11d48;
+}
+
+body.dark .role-user{
+    background:#d1fae5;
+    color:#059669;
+}
+
+/* Action Button */
+
+body.dark .edit-btn{
+    background:#eef2ff;
+    color:#4338ca;
+}
+
+body.dark .delete-btn{
+    background:#ffe4e6;
+    color:#e11d48;
+}
+/* ===== Force toàn bộ form trong Dark Mode ===== */
+
+body.dark input,
+body.dark textarea,
+body.dark select{
+    background:#111827 !important;
+    color:#f8fafc !important;
+    border:1px solid #334155 !important;
+}
+
+/* Text nhập */
+body.dark input,
+body.dark textarea{
+    -webkit-text-fill-color:#f8fafc !important;
+    caret-color:#ffffff;
+}
+
+/* Placeholder */
+body.dark input::placeholder,
+body.dark textarea::placeholder{
+    color:#94a3b8 !important;
+}
+
+/* Date */
+body.dark input[type="date"]{
+    color:#f8fafc !important;
+}
+
+/* Calendar icon */
+body.dark input[type="date"]::-webkit-calendar-picker-indicator{
+    filter:invert(1);
+}
+/* ===== User Form ===== */
+
+body.dark .page-header h1,
+body.dark .page-header p,
+body.dark .form-header h2,
+body.dark .form-header p,
+body.dark .form-group label{
+    color:#f8fafc !important;
+}
+
+body.dark .input-box{
+    background:#0f172a !important;
+    border-color:#334155 !important;
+}
+
+body.dark .input-box input,
+body.dark .input-box select{
+    color:#f8fafc !important;
+}
+
+body.dark .input-box input::placeholder{
+    color:#94a3b8 !important;
+}
+
+/* upload */
+
+body.dark .avatar-upload-box{
+    background:#0f172a !important;
+    border-color:#475569 !important;
+}
+
+body.dark .file-name{
+    color:#e2e8f0 !important;
+}
+
+body.dark .upload-note{
+    color:#94a3b8 !important;
+}
+
+body.dark .cancel-btn{
+    background:#334155 !important;
+    color:#fff !important;
+}
+
+body.dark .back-btn{
+    background:#273449 !important;
+    color:#fff !important;
+    border-color:#334155 !important;
+}
+
+body.dark .toggle-password{
+    color:#cbd5e1 !important;
+}
+
+body.dark .toggle-password:hover{
+    color:#6366f1 !important;
+}
+/* Ô nhập mật khẩu */
+body.dark #passwordInput{
+    background: transparent !important;
+    color: #f8fafc !important;
+}
+/* Upload button */
+body.dark .upload-btn{
+    background: linear-gradient(135deg,#6366f1,#4338ca) !important;
+    color:#fff !important;
+    border:none !important;
+}
+
+body.dark .upload-btn:hover{
+    background: linear-gradient(135deg,#7c7cff,#4f46e5) !important;
+    color:#fff !important;
+}
+
+body.dark .upload-btn i{
+    color:#fff !important;
+}
+/* Fix nền trắng của password/autofill */
+body.dark input[type="password"],
+body.dark input[type="password"]:focus,
+body.dark input[type="password"]:-webkit-autofill,
+body.dark input[type="password"]:-webkit-autofill:hover,
+body.dark input[type="password"]:-webkit-autofill:focus{
+    -webkit-text-fill-color:#f8fafc !important;
+    -webkit-box-shadow:0 0 0 1000px #0f172a inset !important;
+    box-shadow:0 0 0 1000px #0f172a inset !important;
+    background:#0f172a !important;
+    caret-color:#fff;
+}
+/* ===== Fix table header trong Dark Mode ===== */
+
+body.dark .user-table thead,
+body.dark .user-table thead tr{
+    background: transparent !important;
+}
+
+body.dark .user-table thead th{
+    background:#1e293b !important;   /* hoặc #273449 */
+    color:#cbd5e1 !important;
+    border-bottom:1px solid #334155 !important;
+}
+
+/* Dòng dữ liệu */
+body.dark .user-table tbody tr{
+    background:#1e293b !important;
+}
+
+body.dark .user-table tbody tr:hover{
+    background:#273449 !important;
 }

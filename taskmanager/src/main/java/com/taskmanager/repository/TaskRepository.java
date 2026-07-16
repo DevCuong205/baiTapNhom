@@ -155,4 +155,12 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             Pageable pageable
     );
 
+    List<Task> findByDeadlineBetweenAndStatusNot(
+            LocalDate start,
+            LocalDate end,
+            String status
+    );
+
+    long countByStatusNot(String status);
+
 }
