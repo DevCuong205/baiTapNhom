@@ -4,6 +4,7 @@ import com.taskmanager.entity.Task;
 import com.taskmanager.entity.User;
 import com.taskmanager.repository.TaskRepository;
 import com.taskmanager.repository.UserRepository;
+import com.taskmanager.service.ActivityLogService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.swing.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,6 +24,9 @@ public class TaskController {
 
     @Autowired
     private TaskRepository taskRepository;
+
+    @Autowired
+    private ActivityLogService activityLogService;
 
     @Autowired
     private UserRepository userRepository;
@@ -273,6 +278,24 @@ public class TaskController {
 
         taskRepository.save(task);
 
+        if (isNew) {
+
+            activityLogService.save(
+                    loginUser,
+                    "THÊM CÔNG VIỆC",
+                    "Đã tạo công việc: " + task.getTitle()
+            );
+
+        } else {
+
+            activityLogService.save(
+                    loginUser,
+                    "SỬA CÔNG VIỆC",
+                    "Đã cập nhật công việc: " + task.getTitle()
+            );
+
+        }
+
         if(isNew){
             ra.addFlashAttribute("success","Thêm công việc thành công!");
         }else{
@@ -327,7 +350,20 @@ public class TaskController {
             return "redirect:/tasks?error=no_permission";
         }
 
-        taskRepository.deleteById(id);
+        Task task = taskRepository.findById(id).orElse(null);
+
+        if (task == null) {
+            ra.addFlashAttribute("error", "Không tìm thấy công việc!");
+            return "redirect:/tasks";
+        }
+
+        activityLogService.save(
+                user,
+                "XÓA CÔNG VIỆC",
+                "Đã xóa công việc: " + task.getTitle()
+        );
+
+        taskRepository.delete(task);
 
         ra.addFlashAttribute("success", "Xóa công việc thành công!");
 

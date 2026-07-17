@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Lịch sử hoạt động - Task Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <!-- Icon -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" th:href="@{/css/activity.css}">
+    <link rel="stylesheet" th:href="@{/css/dark.css}">
+</head>
+
+<script th:src="@{/js/theme.js}"></script>
+
+<body>
+
+<div class="app">
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+
+            <div class="logo">
+                <i class="fa-solid fa-clipboard-list"></i>
+            </div>
+
+            <div class="brand-text">
+                <h2>Task Manager</h2>
+                <p>Hệ thống quản lý công việc</p>
+            </div>
+
+        </div>
+
+        <!-- Profile -->
+
+        <div class="profile-card">
+
+            <img th:if="${session.user != null and session.user.avatar != null and !#strings.isEmpty(session.user.avatar)}"
+                 th:src="@{/avatars/{file}(file=${session.user.avatar})}"
+                 class="avatar">
+
+            <img th:unless="${session.user != null and session.user.avatar != null and !#strings.isEmpty(session.user.avatar)}"
+                 th:src="@{/avatars/default.png}"
+                 class="avatar">
+
+            <h3 th:text="${session.user.fullname}">Admin</h3>
+
+            <p>
+                Xin chào, chúc bạn một ngày làm việc hiệu quả 👋
+            </p>
+
+            <span class="role-badge"
+                  th:text="${session.user.role}">
+            </span>
+
+            <a href="/logout"
+               class="logout-btn">
+
+                <i class="fa-solid fa-right-from-bracket"></i>
+
+                Đăng xuất
+
+            </a>
+
+        </div>
+
+        <!-- Menu -->
+
+        <div>
+
+            <div class="menu-title">
+                Điều hướng
+            </div>
+
+            <nav class="menu">
+
+                <a href="/">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="/tasks">
+                    <i class="fa-solid fa-list-check"></i>
+                    <span>Công việc</span>
+                </a>
+
+                <a href="/users"
+                   th:if="${session.user.role=='ADMIN'}">
+
+                    <i class="fa-solid fa-users"></i>
+                    <span>Người dùng</span>
+
+                </a>
+
+                <a href="/activity"
+                   class="active"
+                   th:if="${session.user.role=='ADMIN'}">
+
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+
+                    <span>Lịch sử hoạt động</span>
+
+                </a>
+
+            </nav>
+
+        </div>
+
+    </aside>
+    <!-- ================= MAIN ================= -->
+
+    <main class="main">
+
+        <!-- TOPBAR -->
+
+        <div class="topbar">
+
+            <button id="themeBtn" class="theme-btn">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+
+            <div class="welcome">
+
+                <h1>Lịch sử hoạt động</h1>
+
+                <p>
+                    Theo dõi toàn bộ thao tác của người dùng trong hệ thống.
+                </p>
+
+            </div>
+
+        </div>
+
+        <!-- OVERVIEW -->
+
+        <section class="overview-banner">
+
+            <div class="overview-left">
+
+                <h2>Nhật ký hệ thống</h2>
+
+                <p>
+                    Mọi thao tác thêm, sửa, xóa công việc và người dùng đều
+                    được lưu lại để quản trị viên dễ dàng theo dõi.
+                </p>
+
+            </div>
+
+            <div class="overview-emoji">
+                📜
+            </div>
+
+        </section>
+
+        <!-- PANEL -->
+
+        <section class="panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <h3>Danh sách hoạt động</h3>
+
+                    <p>
+
+                        Tổng số hoạt động:
+
+                        <b th:text="${logs.size()}">0</b>
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="table-wrapper">
+
+                <table class="activity-table">
+
+                    <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+
+                        <th>Người thực hiện</th>
+
+                        <th>Hành động</th>
+
+                        <th>Mô tả</th>
+
+                        <th>Thời gian</th>
+
+                    </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                    <tr th:each="log : ${logs}">
+
+                        <td th:text="${log.id}"></td>
+
+                        <td>
+
+                            <div class="user-info">
+
+                                <img th:if="${log.user.avatar!=null}"
+                                     th:src="@{/avatars/{file}(file=${log.user.avatar})}"
+                                     class="table-avatar">
+
+                                <img th:unless="${log.user.avatar!=null}"
+                                     th:src="@{/avatars/default.png}"
+                                     class="table-avatar">
+
+                                <div>
+
+                                    <div class="user-name"
+                                         th:text="${log.user.fullname}">
+                                    </div>
+
+                                    <small th:text="${log.user.role}">
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+                        <td>
+
+                            <span class="action-badge"
+
+                                  th:classappend="
+                                  ${#strings.contains(log.action,'THÊM')} ? ' add' :
+                                  (${#strings.contains(log.action,'SỬA')} ? ' edit' :
+                                  (${#strings.contains(log.action,'XÓA')} ? ' delete' : ''))"
+
+                                  th:text="${log.action}">
+
+                            </span>
+
+                        </td>
+
+                        <td th:text="${log.description}">
+                        </td>
+
+                        <td th:text="${#temporals.format(log.createdAt,'dd/MM/yyyy HH:mm')}">
+                        </td>
+
+                    </tr>
+
+                    <tr th:if="${#lists.isEmpty(logs)}">
+
+                        <td colspan="5" class="empty-cell">
+
+                            Chưa có lịch sử hoạt động.
+
+                        </td>
+
+                    </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <!-- Pagination -->
+
+            <div class="pagination-container"
+
+                 th:if="${totalPages>1}">
+
+                <div class="pagination">
+
+                    <a th:if="${currentPage>0}"
+
+                       th:href="@{/activity(page=0)}"
+
+                       class="page-btn">
+
+                        <i class="fa-solid fa-angles-left"></i>
+
+                    </a>
+
+                    <a th:if="${currentPage>0}"
+
+                       th:href="@{/activity(page=${currentPage-1})}"
+
+                       class="page-btn">
+
+                        <i class="fa-solid fa-angle-left"></i>
+
+                    </a>
+
+                    <a th:each="i:${#numbers.sequence(0,totalPages-1)}"
+
+                       th:href="@{/activity(page=${i})}"
+
+                       th:text="${i+1}"
+
+                       th:classappend="${i==currentPage}?' active':''"
+
+                       class="page-btn">
+
+                    </a>
+
+                    <a th:if="${currentPage<totalPages-1}"
+
+                       th:href="@{/activity(page=${currentPage+1})}"
+
+                       class="page-btn">
+
+                        <i class="fa-solid fa-angle-right"></i>
+
+                    </a>
+
+                    <a th:if="${currentPage<totalPages-1}"
+
+                       th:href="@{/activity(page=${totalPages-1})}"
+
+                       class="page-btn">
+
+                        <i class="fa-solid fa-angles-right"></i>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</body>
+
+</html>

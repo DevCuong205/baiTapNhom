@@ -73,6 +73,13 @@
                     <i class="fa-solid fa-users"></i>
                     <span>Người dùng</span>
                 </a>
+
+                <a th:if="${session.user.role == 'ADMIN'}"
+                   href="/activity">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span>Lịch sử hoạt động</span>
+                </a>
+
             </nav>
         </div>
     </aside>

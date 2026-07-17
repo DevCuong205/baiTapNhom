@@ -2,6 +2,7 @@ package com.taskmanager.controller;
 
 import com.taskmanager.entity.User;
 import com.taskmanager.repository.UserRepository;
+import com.taskmanager.service.ActivityLogService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,6 +22,9 @@ public class UserController {
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired
+    private ActivityLogService activityLogService;
 
     @Autowired
     private UserRepository userRepository;
@@ -161,6 +165,26 @@ public class UserController {
 
             User savedUser = userRepository.save(user);
 
+            User loginUser = (User) session.getAttribute("user");
+
+            if (isNew) {
+
+                activityLogService.save(
+                        loginUser,
+                        "THÊM NGƯỜI DÙNG",
+                        "Đã tạo tài khoản: " + savedUser.getUsername()
+                );
+
+            } else {
+
+                activityLogService.save(
+                        loginUser,
+                        "CẬP NHẬT NGƯỜI DÙNG",
+                        "Đã cập nhật tài khoản: " + savedUser.getUsername()
+                );
+
+            }
+
             User sessionUser = (User) session.getAttribute("user");
 
             if (sessionUser != null &&
@@ -239,6 +263,12 @@ public class UserController {
                 avatarFile.delete();
             }
         }
+
+        activityLogService.save(
+                loginUser,
+                "XÓA NGƯỜI DÙNG",
+                "Đã xóa tài khoản: " + user.getUsername()
+        );
 
         userRepository.delete(user);
 
