@@ -21,12 +21,13 @@ public class ActivityLogService {
         ActivityLog log = new ActivityLog();
 
         log.setUser(user);
+        log.setUsername(user.getUsername());
+
         log.setAction(action);
         log.setDescription(description);
         log.setCreatedAt(LocalDateTime.now());
 
         activityLogRepository.save(log);
-
     }
 
 }
