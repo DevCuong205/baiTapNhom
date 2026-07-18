@@ -17,9 +17,28 @@
     <link rel="stylesheet" th:href="@{/css/users.css}">
 
     <link rel="stylesheet" th:href="@{/css/dark.css}">
+
+    <link rel="stylesheet" th:href="@{/css/loading.css}">
+
 </head>
 <script th:src="@{/js/theme.js}"></script>
 <body>
+
+<div id="loader">
+
+    <div class="loader-box">
+
+        <div class="loader-logo">
+            <i class="fa-solid fa-clipboard-list"></i>
+        </div>
+
+        <div class="loader-spinner"></div>
+
+        <p>Đang tải dữ liệu...</p>
+
+    </div>
+
+</div>
 
 <div class="app">
 
@@ -321,5 +340,6 @@
         position: 'top-end'
     });
 </script>
+<script th:src="@{/js/loading.js}"></script>
 </body>
 </html>
