@@ -1,0 +1,499 @@
+
+/* =========================
+   DARK MODE - TASK MANAGER
+========================= */
+
+body.dark{
+    --bg:#0f172a;
+    --surface:#1e293b;
+    --surface2:#273449;
+
+    --text-primary:#f8fafc;
+    --text-secondary:#cbd5e1;
+    --text-muted:#94a3b8;
+
+    --border:#334155;
+
+    background:var(--bg);
+    color:var(--text-primary);
+}
+
+/* Layout */
+
+body.dark .main{
+    background:var(--bg);
+}
+
+body.dark .sidebar{
+    background:#111827;
+}
+
+body.dark .panel,
+body.dark .card,
+body.dark .profile-card,
+body.dark .overview-banner,
+body.dark .modal-content,
+body.dark .table-wrapper{
+    background:var(--surface);
+    border:1px solid var(--border);
+}
+
+/* Text */
+
+body.dark h1,
+body.dark h2,
+body.dark h3,
+body.dark h4,
+body.dark h5,
+body.dark h6{
+    color:#fff;
+}
+
+body.dark p,
+body.dark span,
+body.dark label,
+body.dark small,
+body.dark li{
+    color:var(--text-secondary);
+}
+
+/* Menu */
+
+body.dark .menu a{
+    color:var(--text-secondary);
+}
+
+body.dark .menu a:hover{
+    background:#273449;
+}
+
+body.dark .menu a.active{
+    background:#4f46e5;
+    color:#fff;
+}
+
+/* Inputs */
+
+body.dark input,
+body.dark select,
+body.dark textarea{
+    background:#0f172a;
+    color:#fff;
+    border:1px solid #334155;
+}
+
+body.dark input::placeholder,
+body.dark textarea::placeholder{
+    color:#94a3b8;
+}
+
+body.dark input:focus,
+body.dark select:focus,
+body.dark textarea:focus{
+    border-color:#6366f1;
+    box-shadow:0 0 0 3px rgba(99,102,241,.25);
+}
+
+/* User Form */
+
+body.dark .input-box{
+    background:#0f172a;
+    border:1px solid #334155;
+}
+
+body.dark .input-box input,
+body.dark .input-box select,
+body.dark .input-box textarea{
+    background:transparent !important;
+    border:none !important;
+    box-shadow:none !important;
+    color:#fff !important;
+}
+
+body.dark .input-box i{
+    color:#94a3b8;
+}
+
+body.dark .avatar-upload,
+body.dark .upload-box{
+    background:#0f172a;
+    border:2px dashed #475569;
+}
+
+/* Search */
+
+body.dark .search-box{
+    background:#273449;
+    border:1px solid #334155;
+}
+
+body.dark .search-box input{
+    background:transparent;
+}
+
+/* Tables */
+
+body.dark table{
+    background:transparent;
+}
+
+body.dark thead{
+    background:#273449;
+}
+
+body.dark th{
+    color:#fff;
+}
+
+body.dark td{
+    color:#e2e8f0;
+}
+
+body.dark tbody tr{
+    border-bottom:1px solid #334155;
+}
+
+body.dark tbody tr:hover{
+    background:#273449;
+}
+
+/* Filter */
+
+body.dark .filter-chip{
+    color:#fff;
+}
+
+body.dark .filter-chip.active{
+    background:#4f46e5;
+}
+
+body.dark .filter-chip.danger{
+    background:#dc2626;
+}
+
+body.dark .filter-chip.warning{
+    background:#f59e0b;
+}
+
+body.dark .filter-chip.success{
+    background:#16a34a;
+}
+
+body.dark .filter-chip span{
+    background:rgba(255,255,255,.18);
+    color:#fff;
+}
+
+/* Notification */
+
+body.dark .notification-btn{
+    background:#273449;
+    border:1px solid #334155;
+}
+
+body.dark .notification-btn i{
+    color:#fff;
+}
+
+body.dark .notification-dropdown{
+    background:#1e293b;
+    border:1px solid #334155;
+}
+
+body.dark .notification-dropdown h3{
+    color:#fff;
+}
+
+/* Deadline */
+
+body.dark .deadline-count{
+    background:#7f1d1d;
+    color:#fecaca;
+    border:1px solid #dc2626;
+}
+
+body.dark .deadline-count.warning{
+    background:#78350f;
+    color:#fde68a;
+    border:1px solid #f59e0b;
+}
+
+/* Buttons */
+
+body.dark .btn-secondary{
+    background:#334155;
+    color:#fff;
+    border:1px solid #475569;
+}
+
+body.dark .btn-secondary:hover{
+    background:#475569;
+}
+
+/* Role Badge */
+
+body.dark .role-admin{
+    background:#ffe4e6;
+    color:#e11d48;
+}
+
+body.dark .role-user{
+    background:#d1fae5;
+    color:#059669;
+}
+
+/* Action Button */
+
+body.dark .edit-btn{
+    background:#eef2ff;
+    color:#4338ca;
+}
+
+body.dark .delete-btn{
+    background:#ffe4e6;
+    color:#e11d48;
+}
+/* ===== Force toàn bộ form trong Dark Mode ===== */
+
+body.dark input,
+body.dark textarea,
+body.dark select{
+    background:#111827 !important;
+    color:#f8fafc !important;
+    border:1px solid #334155 !important;
+}
+
+/* Text nhập */
+body.dark input,
+body.dark textarea{
+    -webkit-text-fill-color:#f8fafc !important;
+    caret-color:#ffffff;
+}
+
+/* Placeholder */
+body.dark input::placeholder,
+body.dark textarea::placeholder{
+    color:#94a3b8 !important;
+}
+
+/* Date */
+body.dark input[type="date"]{
+    color:#f8fafc !important;
+}
+
+/* Calendar icon */
+body.dark input[type="date"]::-webkit-calendar-picker-indicator{
+    filter:invert(1);
+}
+/* ===== User Form ===== */
+
+body.dark .page-header h1,
+body.dark .page-header p,
+body.dark .form-header h2,
+body.dark .form-header p,
+body.dark .form-group label{
+    color:#f8fafc !important;
+}
+
+body.dark .input-box{
+    background:#0f172a !important;
+    border-color:#334155 !important;
+}
+
+body.dark .input-box input,
+body.dark .input-box select{
+    color:#f8fafc !important;
+}
+
+body.dark .input-box input::placeholder{
+    color:#94a3b8 !important;
+}
+
+/* upload */
+
+body.dark .avatar-upload-box{
+    background:#0f172a !important;
+    border-color:#475569 !important;
+}
+
+body.dark .file-name{
+    color:#e2e8f0 !important;
+}
+
+body.dark .upload-note{
+    color:#94a3b8 !important;
+}
+
+body.dark .cancel-btn{
+    background:#334155 !important;
+    color:#fff !important;
+}
+
+body.dark .back-btn{
+    background:#273449 !important;
+    color:#fff !important;
+    border-color:#334155 !important;
+}
+
+body.dark .toggle-password{
+    color:#cbd5e1 !important;
+}
+
+body.dark .toggle-password:hover{
+    color:#6366f1 !important;
+}
+/* Ô nhập mật khẩu */
+body.dark #passwordInput{
+    background: transparent !important;
+    color: #f8fafc !important;
+}
+/* Upload button */
+body.dark .upload-btn{
+    background: linear-gradient(135deg,#6366f1,#4338ca) !important;
+    color:#fff !important;
+    border:none !important;
+}
+
+body.dark .upload-btn:hover{
+    background: linear-gradient(135deg,#7c7cff,#4f46e5) !important;
+    color:#fff !important;
+}
+
+body.dark .upload-btn i{
+    color:#fff !important;
+}
+/* Fix nền trắng của password/autofill */
+body.dark input[type="password"],
+body.dark input[type="password"]:focus,
+body.dark input[type="password"]:-webkit-autofill,
+body.dark input[type="password"]:-webkit-autofill:hover,
+body.dark input[type="password"]:-webkit-autofill:focus{
+    -webkit-text-fill-color:#f8fafc !important;
+    -webkit-box-shadow:0 0 0 1000px #0f172a inset !important;
+    box-shadow:0 0 0 1000px #0f172a inset !important;
+    background:#0f172a !important;
+    caret-color:#fff;
+}
+/* ===== Fix table header trong Dark Mode ===== */
+
+body.dark .user-table thead,
+body.dark .user-table thead tr{
+    background: transparent !important;
+}
+
+body.dark .user-table thead th{
+    background:#1e293b !important;   /* hoặc #273449 */
+    color:#cbd5e1 !important;
+    border-bottom:1px solid #334155 !important;
+}
+
+/* Dòng dữ liệu */
+body.dark .user-table tbody tr{
+    background:#1e293b !important;
+}
+
+body.dark .user-table tbody tr:hover{
+    background:#273449 !important;
+}
+/* ===== Select Dropdown Dark ===== */
+
+body.dark select {
+    background: #111827 !important;
+    color: #f8fafc !important;
+}
+
+body.dark select option {
+    background: #111827 !important;
+    color: #f8fafc !important;
+}
+
+body.dark select option:checked {
+    background: #4f46e5 !important;
+    color: #fff !important;
+}
+
+body.dark select option:hover {
+    background: #4338ca !important;
+    color: #fff !important;
+}
+/* ======================
+   ACTIVITY
+====================== */
+
+body.dark .activity-table th{
+
+    background:#273449;
+
+    color:#fff;
+
+}
+
+body.dark .activity-table td{
+
+    color:#e2e8f0;
+
+    border-bottom:1px solid #334155;
+
+}
+
+body.dark .activity-table tbody tr:hover{
+
+    background:#273449;
+
+}
+
+body.dark .user-name{
+
+    color:#fff;
+
+}
+
+body.dark .table-avatar{
+
+    border-color:#475569;
+
+}
+body.dark .activity-table{
+    background: transparent;
+}
+
+body.dark .activity-table thead th{
+    background:#1f2937;
+    color:#e2e8f0;
+}
+
+body.dark .activity-table tbody td{
+    background:#111827;
+    color:#e5e7eb;
+    border-color:#374151;
+}
+
+body.dark .activity-table tbody tr:hover{
+    background:#1e293b;
+}
+/* ===========================
+   SweetAlert Fix
+=========================== */
+
+.swal2-popup{
+    background:#1e293b !important;
+    color:#fff !important;
+}
+
+.swal2-title{
+    color:#fff !important;
+}
+
+.swal2-html-container{
+    color:#cbd5e1 !important;
+}
+
+.swal2-confirm{
+    background:#4f46e5 !important;
+}
+
+.swal2-success-circular-line-left,
+.swal2-success-circular-line-right,
+.swal2-success-fix{
+    background:transparent !important;
+}

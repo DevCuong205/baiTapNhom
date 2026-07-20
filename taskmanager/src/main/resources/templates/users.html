@@ -15,8 +15,30 @@
 
     <!-- CSS -->
     <link rel="stylesheet" th:href="@{/css/users.css}">
+
+    <link rel="stylesheet" th:href="@{/css/dark.css}">
+
+    <link rel="stylesheet" th:href="@{/css/loading.css}">
+
 </head>
+<script th:src="@{/js/theme.js}"></script>
 <body>
+
+<div id="loader">
+
+    <div class="loader-box">
+
+        <div class="loader-logo">
+            <i class="fa-solid fa-clipboard-list"></i>
+        </div>
+
+        <div class="loader-spinner"></div>
+
+        <p>Đang tải dữ liệu...</p>
+
+    </div>
+
+</div>
 
 <div class="app">
 
@@ -72,6 +94,13 @@
                     <i class="fa-solid fa-users"></i>
                     <span>Người dùng</span>
                 </a>
+
+                <a th:if="${session.user.role == 'ADMIN'}"
+                   href="/activity">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span>Lịch sử hoạt động</span>
+                </a>
+
             </nav>
         </div>
     </aside>
@@ -81,6 +110,11 @@
 
         <!-- TOPBAR -->
         <div class="topbar">
+
+            <button id="themeBtn" class="theme-btn">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+
             <div class="welcome">
                 <h1>Quản Lý Người Dùng</h1>
                 <p>Quản lý tài khoản, quyền hạn và thông tin người dùng trong hệ thống.</p>
@@ -187,24 +221,37 @@
 
                                 <a th:href="@{'/users/edit/' + ${u.id}}"
                                    class="action-btn edit-btn">
+
                                     <i class="fa-solid fa-pen"></i>
                                     Sửa
-                                </a>
-
-                                <a th:href="@{'/users/delete/' + ${u.id}}"
-                                   class="action-btn delete-btn js-delete-btn"
-                                   th:attr="data-name=${u.fullname}">
-
-                                    <i class="fa-solid fa-trash"></i>
-                                    Xóa
 
                                 </a>
+
+
+                                <form th:action="@{'/users/delete/' + ${u.id}}"
+                                      method="post"
+                                      style="display:inline"
+                                      onsubmit="return confirm('Bạn có chắc muốn xóa người dùng này?')">
+
+
+                                    <button type="submit"
+                                            class="action-btn delete-btn">
+
+                                        <i class="fa-solid fa-trash"></i>
+                                        Xóa
+
+                                    </button>
+
+
+                                </form>
 
                             </div>
 
+
                             <span th:unless="${session.user.role == 'ADMIN'}">
-                                        Không có quyền
-                        </span>
+                                              Không có quyền
+                            </span>
+
                         </td>
                     </tr>
 
@@ -219,188 +266,80 @@
                 <div class="empty-cell" id="noResultRow" style="display:none;">
                     Không tìm thấy người dùng nào khớp với từ khóa.
                 </div>
+
             </div>
+
+            <p class="page-info">
+                Trang <b th:text="${currentPage+1}"></b> /
+                <b th:text="${totalPages}"></b>
+            </p>
+
+            <div class="pagination-container" th:if="${totalPages > 1}">
+
+                <div class="pagination">
+
+                    <a th:if="${currentPage > 0}"
+                       th:href="@{/users(page=0,size=${size})}"
+                       class="page-btn">
+                        <i class="fa-solid fa-angles-left"></i>
+                    </a>
+
+                    <a th:if="${currentPage > 0}"
+                       th:href="@{/users(page=${currentPage-1},size=${size})}"
+                       class="page-btn">
+                        <i class="fa-solid fa-angle-left"></i>
+                    </a>
+
+                    <a th:each="i : ${#numbers.sequence(0,totalPages-1)}"
+                       th:href="@{/users(page=${i},size=${size})}"
+                       th:text="${i+1}"
+                       th:classappend="${i==currentPage} ? ' active' : ''"
+                       class="page-btn">
+                    </a>
+
+                    <a th:if="${currentPage < totalPages-1}"
+                       th:href="@{/users(page=${currentPage+1},size=${size})}"
+                       class="page-btn">
+                        <i class="fa-solid fa-angle-right"></i>
+                    </a>
+
+                    <a th:if="${currentPage < totalPages-1}"
+                       th:href="@{/users(page=${totalPages-1},size=${size})}"
+                       class="page-btn">
+                        <i class="fa-solid fa-angles-right"></i>
+                    </a>
+
+                </div>
+
+            </div>
+
         </section>
     </main>
 </div>
-
-<!-- LIGHTBOX AVATAR -->
-<div class="lightbox-overlay" id="avatarLightbox">
-    <div class="lightbox-content">
-        <img src="" alt="Avatar" id="lightboxImg">
-        <button type="button" class="lightbox-close" id="lightboxClose">
-            <i class="fa-solid fa-xmark"></i>
-        </button>
-    </div>
-</div>
-
-<!-- MODAL XÁC NHẬN XOÁ -->
-<div class="confirm-overlay" id="deleteConfirmModal">
-    <div class="confirm-box">
-        <div class="confirm-icon">
-            <i class="fa-solid fa-triangle-exclamation"></i>
-        </div>
-        <h3>Xoá người dùng?</h3>
-        <p>Bạn có chắc muốn xoá <b id="deleteUserName">người dùng này</b>? Hành động này không thể hoàn tác.</p>
-        <div class="confirm-actions">
-            <button type="button" class="cancel-btn" id="cancelDeleteBtn">Huỷ</button>
-            <a href="#" class="delete-btn" id="confirmDeleteBtn">Xoá</a>
-        </div>
-    </div>
-</div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-
-        const tableBody = document.getElementById('userTableBody');
-        const rows = Array.from(tableBody.querySelectorAll('tr[data-fullname]'));
-        const noResultRow = document.getElementById('noResultRow');
-        const userCountLabel = document.getElementById('userCountLabel');
-        const totalRowCount = rows.length;
-
-        // ---------- Live search ----------
-        const liveSearchInput = document.getElementById('liveSearchInput');
-
-        function normalize(str) {
-            return (str || '').toLowerCase().trim();
-        }
-
-        function applyLiveFilter(keyword) {
-            const kw = normalize(keyword);
-            let visibleCount = 0;
-
-            rows.forEach(function (row) {
-                const fullname = normalize(row.getAttribute('data-fullname'));
-                const username = normalize(row.getAttribute('data-username'));
-                const match = !kw || fullname.includes(kw) || username.includes(kw);
-
-                row.style.display = match ? '' : 'none';
-                if (match) visibleCount++;
-            });
-
-            if (noResultRow) {
-                noResultRow.style.display = (visibleCount === 0 && totalRowCount > 0) ? 'block' : 'none';
-            }
-
-            if (userCountLabel) {
-                userCountLabel.textContent = visibleCount;
-            }
-        }
-
-        if (liveSearchInput) {
-            liveSearchInput.addEventListener('input', function () {
-                applyLiveFilter(this.value);
-            });
-        }
-
-        // ---------- Sắp xếp theo cột ----------
-        const sortableHeaders = document.querySelectorAll('.sortable');
-
-        sortableHeaders.forEach(function (header) {
-            let ascending = true;
-
-            header.addEventListener('click', function () {
-                const type = header.getAttribute('data-sort');
-                const colIndex = parseInt(header.getAttribute('data-col'), 10);
-
-                const sortedRows = rows.slice().sort(function (a, b) {
-                    let valA = a.children[colIndex].textContent.trim();
-                    let valB = b.children[colIndex].textContent.trim();
-
-                    if (type === 'number') {
-                        valA = parseFloat(valA) || 0;
-                        valB = parseFloat(valB) || 0;
-                    } else {
-                        valA = valA.toLowerCase();
-                        valB = valB.toLowerCase();
-                    }
-
-                    if (valA < valB) return ascending ? -1 : 1;
-                    if (valA > valB) return ascending ? 1 : -1;
-                    return 0;
-                });
-
-                sortedRows.forEach(function (row) {
-                    tableBody.appendChild(row);
-                });
-
-                sortableHeaders.forEach(function (h) {
-                    const icon = h.querySelector('i');
-                    if (icon) icon.className = 'fa-solid fa-sort';
-                });
-
-                const icon = header.querySelector('i');
-                if (icon) {
-                    icon.className = ascending ? 'fa-solid fa-sort-up' : 'fa-solid fa-sort-down';
-                }
-
-                ascending = !ascending;
-            });
-        });
-
-        // ---------- Lightbox xem avatar to ----------
-        const avatarLightbox = document.getElementById('avatarLightbox');
-        const lightboxImg = document.getElementById('lightboxImg');
-        const lightboxClose = document.getElementById('lightboxClose');
-
-        document.querySelectorAll('.js-avatar-preview').forEach(function (img) {
-            img.style.cursor = 'zoom-in';
-            img.addEventListener('click', function () {
-                lightboxImg.src = this.src;
-                avatarLightbox.classList.add('show');
-            });
-        });
-
-        function closeLightbox() {
-            avatarLightbox.classList.remove('show');
-            lightboxImg.src = '';
-        }
-
-        if (lightboxClose) {
-            lightboxClose.addEventListener('click', closeLightbox);
-        }
-
-        if (avatarLightbox) {
-            avatarLightbox.addEventListener('click', function (e) {
-                if (e.target === avatarLightbox) closeLightbox();
-            });
-        }
-
-        // ---------- Modal xác nhận xoá ----------
-        const deleteConfirmModal = document.getElementById('deleteConfirmModal');
-        const deleteUserName = document.getElementById('deleteUserName');
-        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
-        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
-
-        document.querySelectorAll('.js-delete-btn').forEach(function (btn) {
-            btn.addEventListener('click', function (e) {
-                e.preventDefault();
-
-                const name = this.getAttribute('data-name') || 'người dùng này';
-                const href = this.getAttribute('href');
-
-                deleteUserName.textContent = name;
-                confirmDeleteBtn.setAttribute('href', href);
-                deleteConfirmModal.classList.add('show');
-            });
-        });
-
-        function closeDeleteModal() {
-            deleteConfirmModal.classList.remove('show');
-        }
-
-        if (cancelDeleteBtn) {
-            cancelDeleteBtn.addEventListener('click', closeDeleteModal);
-        }
-
-        if (deleteConfirmModal) {
-            deleteConfirmModal.addEventListener('click', function (e) {
-                if (e.target === deleteConfirmModal) closeDeleteModal();
-            });
-        }
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script th:if="${success}">
+    Swal.fire({
+        icon: 'success',
+        title: 'Thành công',
+        text: '[[${success}]]',
+        timer: 2500,
+        showConfirmButton: false,
+        toast: true,
+        position: 'top-end'
     });
 </script>
 
+<script th:if="${error}">
+    Swal.fire({
+        icon: 'error',
+        title: 'Lỗi',
+        text: '[[${error}]]',
+        timer: 2500,
+        showConfirmButton: false,
+        toast: true,
+        position: 'top-end'
+    });
+</script>
+<script th:src="@{/js/loading.js}"></script>
 </body>
 </html>

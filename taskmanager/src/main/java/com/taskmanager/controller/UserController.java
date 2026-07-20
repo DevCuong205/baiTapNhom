@@ -2,6 +2,7 @@ package com.taskmanager.controller;
 
 import com.taskmanager.entity.User;
 import com.taskmanager.repository.UserRepository;
+import com.taskmanager.service.ActivityLogService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -9,6 +10,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.File;
 
@@ -19,6 +24,9 @@ public class UserController {
     private BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
+    private ActivityLogService activityLogService;
+
+    @Autowired
     private UserRepository userRepository;
 
     private boolean isAdmin(HttpSession session) {
@@ -27,14 +35,25 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public String listUsers(Model model, HttpSession session) {
+    public String listUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            Model model,
+            HttpSession session) {
 
         if (!isAdmin(session)) {
             return "redirect:/";
         }
 
-        model.addAttribute("users", userRepository.findAll());
-        model.addAttribute("totalUsers", userRepository.count());
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<User> userPage = userRepository.findAll(pageable);
+
+        model.addAttribute("users", userPage.getContent());
+        model.addAttribute("totalUsers", userPage.getTotalElements());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", userPage.getTotalPages());
+        model.addAttribute("size", size);
 
         return "users";
     }
@@ -57,7 +76,8 @@ public class UserController {
     @PostMapping("/users/save")
     public String saveUser(@ModelAttribute User user,
                            @RequestParam(value = "avatarFile", required = false) MultipartFile avatarFile,
-                           HttpSession session) {
+                           HttpSession session,
+                           RedirectAttributes ra) {
 
         if (!isAdmin(session)) {
             return "redirect:/";
@@ -141,7 +161,29 @@ public class UserController {
                 }
             }
 
+            boolean isNew = (user.getId() == null);
+
             User savedUser = userRepository.save(user);
+
+            User loginUser = (User) session.getAttribute("user");
+
+            if (isNew) {
+
+                activityLogService.save(
+                        loginUser,
+                        "THÊM NGƯỜI DÙNG",
+                        "Đã tạo tài khoản: " + savedUser.getUsername()
+                );
+
+            } else {
+
+                activityLogService.save(
+                        loginUser,
+                        "CẬP NHẬT NGƯỜI DÙNG",
+                        "Đã cập nhật tài khoản: " + savedUser.getUsername()
+                );
+
+            }
 
             User sessionUser = (User) session.getAttribute("user");
 
@@ -149,6 +191,12 @@ public class UserController {
                     sessionUser.getId().equals(savedUser.getId())) {
 
                 session.setAttribute("user", savedUser);
+            }
+
+            if (isNew) {
+                ra.addFlashAttribute("success", "Thêm người dùng thành công!");
+            } else {
+                ra.addFlashAttribute("success", "Cập nhật người dùng thành công!");
             }
 
         } catch (Exception e) {
@@ -182,9 +230,10 @@ public class UserController {
         return "user-form";
     }
 
-    @GetMapping("/users/delete/{id}")
+    @PostMapping("/users/delete/{id}")
     public String deleteUser(@PathVariable Long id,
-                             HttpSession session) {
+                             HttpSession session,
+                             RedirectAttributes ra) {
 
         if (!isAdmin(session)) {
             return "redirect:/";
@@ -215,27 +264,47 @@ public class UserController {
             }
         }
 
+        activityLogService.save(
+                loginUser,
+                "XÓA NGƯỜI DÙNG",
+                "Đã xóa tài khoản: " + user.getUsername()
+        );
+
         userRepository.delete(user);
+
+        ra.addFlashAttribute("success", "Xóa người dùng thành công!");
 
         return "redirect:/users";
     }
 
     @GetMapping("/users/search")
-    public String searchUser(@RequestParam String keyword,
-                             Model model,
-                             HttpSession session) {
+    public String searchUser(
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            Model model,
+            HttpSession session) {
 
         if (!isAdmin(session)) {
             return "redirect:/";
         }
 
-        java.util.List<User> results =
-                userRepository.findByFullnameContainingIgnoreCaseOrUsernameContainingIgnoreCase(keyword, keyword);
- 
-        model.addAttribute("users", results);
-        model.addAttribute("totalUsers", results.size());
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<User> results =
+                userRepository.findByFullnameContainingIgnoreCaseOrUsernameContainingIgnoreCase(
+                        keyword,
+                        keyword,
+                        pageable
+                );
+
+        model.addAttribute("users", results.getContent());
+        model.addAttribute("totalUsers", results.getTotalElements());
         model.addAttribute("keyword", keyword);
- 
+
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", results.getTotalPages());
+        model.addAttribute("size", size);
 
         return "users";
     }
