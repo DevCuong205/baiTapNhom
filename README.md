@@ -1,71 +1,106 @@
-# Task Manager
+# 📋 Task Manager
 
-## Giới thiệu
-Task Manager là hệ thống quản lý công việc giúp người dùng theo dõi, tạo và quản lý các nhiệm vụ hằng ngày.
+Ứng dụng quản lý công việc được xây dựng bằng **Spring Boot + MySQL + Docker**.
 
-## Thành viên nhóm
-- Phạm Đức Cường
-- Nguyễn Xuân Đông
-- Nguyễn Tiến Dũng
+## 🚀 Công nghệ sử dụng
 
-## Công nghệ sử dụng
 - Java 17
-- Spring Boot
-- Spring MVC
+- Spring Boot 3
 - Spring Data JPA
+- Spring Security
 - Thymeleaf
-- MySQL
 - Bootstrap 5
-- Maven
-- Git & GitHub
+- MySQL 8
+- Docker & Docker Compose
 
-## Chức năng
-- Đăng ký tài khoản
-- Đăng nhập/Đăng xuất
-- Quản lý thông tin cá nhân
-- Thêm công việc
-- Sửa công việc
-- Xóa công việc
-- Tìm kiếm công việc
-- Quản lý người dùng (Admin)
+## ✨ Chức năng
 
-## Yêu cầu
-- JDK 17 trở lên
-- Maven
-- MySQL
-- IntelliJ IDEA
+- Đăng nhập
+- Quản lý người dùng
+- Quản lý công việc
+- Dashboard thống kê
+- Upload avatar
+- Activity Log
+- Phân quyền Admin/User
 
-## Cài đặt và chạy
+---
+
+## 🐳 Chạy bằng Docker
 
 ### Clone project
+
 ```bash
-git clone https://github.com/DevCuong205/baiTapNho.git
+git clone https://github.com/DevCuong205/baiTapNhom.git
 ```
 
-### Cấu hình Database
-Tạo database trong MySQL và chỉnh sửa file:
+### Di chuyển vào project
 
-```
-src/main/resources/application.properties
-```
-
-Cập nhật:
-
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/taskmanager
-spring.datasource.username=root
-spring.datasource.password=241005
+```bash
+cd baiTapNhom
 ```
 
-### Chạy project
-Mở project bằng IntelliJ IDEA và chạy lớp:
+### Chạy
+
+```bash
+docker compose up --build -d
+```
+
+Ứng dụng sẽ chạy tại
 
 ```
-TaskManagerApplication.java
+http://localhost:8080
 ```
 
-## Repository
-https://github.com/DevCuong205/baiTapNhom
+---
 
-## Giấy phép
-Project được thực hiện phục vụ mục đích học tập.
+## 🗄 Database
+
+MySQL
+
+```
+Host: localhost
+Port: 3307
+Username: root
+Password: 241005
+Database: taskmanager
+```
+
+Dữ liệu sẽ được import tự động từ file `init.sql`.
+
+---
+
+## 👤 Tài khoản Demo
+
+### Admin
+
+```
+username: admin
+password: 12345
+```
+
+### User
+
+```
+username: user1
+password: 123456
+```
+
+---
+
+## 📸 Giao diện
+
+(Login)
+
+(Dashboard)
+
+(Tasks)
+
+(Users)
+
+---
+
+## 👨‍💻 Tác giả
+
+Phạm Đức Cường
+Nguyễn Xuân Đông 
+Nguyễn Tiến Dũng
