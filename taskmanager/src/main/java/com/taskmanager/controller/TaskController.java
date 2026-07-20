@@ -211,6 +211,12 @@ public class TaskController {
 
         }
 
+        tasks.forEach(task -> {
+            System.out.println(task.getTitle());
+            System.out.println(task.getDescription());
+            System.out.println(task.getUser().getFullname());
+        });
+
         return "tasks";
     }
 

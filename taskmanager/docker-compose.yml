@@ -1,0 +1,44 @@
+version: "3.8"
+
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: taskmanager-db
+    restart: always
+
+    environment:
+      MYSQL_ROOT_PASSWORD: 241005
+      MYSQL_DATABASE: taskmanager
+
+    ports:
+      - "3307:3306"
+
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p241005" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    container_name: taskmanager-app
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+    ports:
+      - "8080:8080"
+
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+
+    volumes:
+      - ./uploads:/app/uploads
+
+volumes:
+  mysql_data:
